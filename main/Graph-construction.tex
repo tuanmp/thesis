@@ -34,8 +34,10 @@ An edge $e_{ij}\in E$ is true if it is also in the truth graph, i.e.
 y_{ij} = 1_{[e_{ij} \in E_{truth}]},
 \end{equation}
 and fake otherwise. 
-A graph neural network is used to assign to every edge $e_{ij} $ a score $s_{ij} = P[y_{ij} = 1]$, interpreted as the probability that the edge in question is true. 
-Edges with scores under a certain threshold are eliminated, and the remaining graph is segmented into \textbf{track candidates}, collections of nodes believed to originate from the same particle.
+A graph neural network is used to assign to every edge $e_{ij} $ a score $s_{ij} = P[y_{ij} = 1]$, representing a continuous function of the probability that the edge in question is true.
+To obtain the probability, a calibration step is sometimes needed \cite{Feng_2022}. 
+For our purpose, a score threshold is selected to satisfy certain requirements on the edge efficiency evaluated on the validation set.
+Edges with scores under the threshold are eliminated, and the remaining graph is segmented into \textbf{track candidates}, collections of nodes believed to originate from the same particle.
 
 \begin{figure}[h!]
     \centering
@@ -46,7 +48,7 @@ Edges with scores under a certain threshold are eliminated, and the remaining gr
 
 \section{Target, non-target particles and evaluation metrics}
 \label{sect:eval-metrics}
-At $\expval{\mu}=200$, each collision event produces $\expval{N}\approx 100000$ particles, the majority of which are of little interest to the physics program in ATLAS. 
+At $\epu=200$, each collision event produces $\expval{N}\approx 10000$ particles, the majority of which are of little interest to the physics program in ATLAS. 
 They include, for example, low-momentum particles from background processes or particles which leave too few hits to be considered reconstructible.
 The remaining particles can be broadly categorized by the interaction from which they emerge. 
 Primary particles are produced in the luminous area directly from proton-proton interaction and stable enough to traverse the detector, including protons, electrons, muons, pions, etc.
@@ -73,7 +75,7 @@ As we will see in chapter \ref{chap:tracking-performance}, the ATLAS reconstruct
     \caption{}
     \label{subfig:z-spectrum}
 \end{subfigure}
-    \caption{Production vertex spectrum}
+    \caption{Distributions of the production vertex position on the transverse plane (a) and along the $z$-axis (b) of simulated particles in $t\bar{t}$-events at $\epu=200$ for non-primary and primary particles. Primary vertices are restricted to a small region around the interaction point, whereas non-primary vertices can occur throughout the detector.}
     \label{fig:vertex-spectrum}
 \end{figure}
 
@@ -82,11 +84,11 @@ To guarantee good electron efficiency without compromising that of other particl
 Similarly, we avoid training models on ``irregular" electron tracks by excluding their contribution from the loss function.
 
 Because each simulated event is generated from one hard-scattering (HS) collision and on average 200 pile-up collisions (section \ref{sect:simulated-samples}), particles originating from soft interactions outnumber HS particles by about two orders of magnitude, (figure \ref{subfig:eta-spectrum}). 
-HS particles are generally more energetic; their $p_T$ spectrum stretches up to 100 GeV, whereas that pile-up particles strongly peaks at $p_T<1$ GeV and terminates at 20 GeV, as shown in figure \ref{subfig:pt-spectrum}. 
+HS particles are generally more energetic; their $\pT$ spectrum stretches up to 100 GeV, whereas that of pile-up particles strongly peaks at $\pT<1$ GeV and terminates at 20 GeV, as shown in figure \ref{subfig:pt-spectrum}. 
 % widely differ, with the former having a much longer tail.
-As a consequence, a loss function calculated from all edges in the event is dominated by examples from low-$p_T$ tracks and bias the model toward pile-up particles, at the expense of high-$p_T$ HS particles that represent the interesting physics.
-This data imbalance largely impacts the performance, since in the presence of the magnetic field, low-$p_T$ particles have larger curvature and therefore different track pattern than do high-$p_T$ particles.
-To cope with this problem, we neglect the contribution to the loss function from particles of $p_T<1$ GeV.
+As a consequence, a loss function calculated from all edges in the event is dominated by examples from low-$\pT$ tracks and bias the model toward pile-up particles, at the expense of high-$\pT$ HS particles that represent the interesting physics.
+This data imbalance largely impacts the performance, since in the presence of the magnetic field, low-$\pT$ particles have larger curvature and therefore different track pattern than do high-$\pT$ particles.
+To cope with this problem, we neglect the contribution to the loss function from particles of $\pT<1$ GeV.
 
 \begin{figure}[h!]
 \begin{subfigure}[b]{0.49\textwidth}
@@ -101,14 +103,14 @@ To cope with this problem, we neglect the contribution to the loss function from
     \caption{}
     \label{subfig:eta-spectrum}
 \end{subfigure}
-    \caption{$p_T$ and $\eta$ spectrum}
+    \caption{Distributions of transverse momentum \pT (a) and pseudorapidity (b) of simulated particles in $t\bar{t}$-events at $\epu=200$ separated according into hard-scattering and pile-up particles. Soft pile-up particles have low \pT, whereas hard-scattering particles have a wider \pT distribution. The former is two orders of magnitude more abundant than the latter.}
     \label{fig:pt-eta-spectrum}
 \end{figure}
 
 In light of this discussion, we sort truth particles into two subsets by the following criteria
 \begin{enumerate}
-    \item \textbf{Target} particles: primary particles from both hard-scattering and pile-up interactions, which have $p_T>1$ GeV and $\abs{\eta}<4$, leave at least 3 hits in the tracker, are produced at a transverse radius $R<26$ cm, and are not electron nor positrons.
-    \item \textbf{Non-target} particles: The rest of truth particles, including those no satisfying the kinematic selection, or electrons.
+    \item \textbf{Target} particles: primary particles from both hard-scattering and pile-up interactions, which have $\pT>1$ GeV and $\abs{\eta}<4$, leave at least 3 hits in the tracker, are produced at a transverse radius $R<26$ cm, and are not electron nor positrons.
+    \item \textbf{Non-target} particles: The rest of truth particles, including electrons and other particles not satisfying the kinematic selection.
 \end{enumerate}
 In the same manner, the subset of $E_{truth}$ comprising exclusively connections from target particles is called the target truth edges and denoted as $E_{truth,target}$. 
 A subset of non-target truth edges is defined as $E_{truth, non-target} = E_{truth} - E_{truth,target}$. 
@@ -122,7 +124,7 @@ The first is the \textbf{edge efficiency} $\epsilon$: the fraction of target tru
 and the second is the \textbf{edge purity} $\rho$: the fraction of target true edges in $E$, excluding non-target true edges
 \begin{equation}
 \label{eq:9.3}
-\rho = \frac{\abs{E_{truth,target} \cap E  }} {\abs{ E \backslash E_{truth, non-target} } } .
+\rho = \frac{\abs{E_{truth,target} \cap E  }} {\abs{ E - E_{truth, non-target} } } .
 \end{equation}
 % These definitions ensure that non-target particles do not contribute to model performance. 
 High edge efficiency indicates that $E$ contains a large proportion of target edges in the event, while high purity means that a small proportion of $E$ is fake edges.
@@ -133,7 +135,7 @@ These definitions also explicitly exclude non-target particles from the evaluati
 The first step of the GNN4ITk chain constructs a graph from the collision event. 
 After the space point formation stage, discussed in section \ref{sect:cluster-spacepoint}, an event is a set of space points, which can be considered as a graph with an empty edge set $G_0=(V, E=\varnothing)$. 
 The graph construction stage populates $E$ with edges, with an objective of including as many target edges as possible, and at the same time control the total number of edges such that the resulting graph can fit on GPU memory to train the GNN. 
-At $\expval{\mu}=200$, a $t\bar{t}$ event has $\mathcal{O}(10^5)$ space points, and a fully-connected graph, though simple, would have $\mathcal{O}(10^{10})$ edges, most of which are unphysical and a massive waste of computing resources.
+At $\epu=200$, a $t\bar{t}$ event has $\mathcal{O}(10^5)$ space points, and a fully-connected graph, though simple, would have $\mathcal{O}(10^{10})$ edges, most of which are unphysical and a too expensive to process.
 Such a sizeable graph would also be unable to fit on the GPU memory. 
 Therefore, more clever methods are needed to construct the graph. 
 We investigate two graph construction methods: Module Map and Metric Learning. 
@@ -162,7 +164,7 @@ The idea is that once the number of observed events is large enough, the map is 
 When building a graph from an event \textit{which has not been seen} by the Module Map, out of all possible connections between space points, only those linking pairs of modules present in the Module Map are admitted to become graph edges. 
 On figure \ref{fig:module-map}, for example, 10 space points on 9 modules are recorded in the new event, with 2 space points present on module 3. 
 The module map therefore admits connections between space points residing on the following module pairs: (1,2), $(2,3_1)$, $(2,3_2)$, $(3_1,4)$, $(3_2,4)$, (4,5), (4,7), (5,6), (7,8), (8,9), with subscripts indicating different space points on the same module where necessary. 
-The module map thus allows to select a small subset of possible connections, in this case 90, based on our previous observations. 
+The module map thus allows to select a small subset of the 90 possible connections, based on our previous observations. 
 
 The same principle can be extended from pairs of modules to triplets of modules, so that the module map is built from a list of three modules sequentially hit by a particle, and on inference, pairs of possible connections appearing in the module map are admitted. 
 Since the requirement of three consecutive hits is stricter than that on two hits, the \textit{triplet} module map helps reduce the number of edges in the reconstructed graph compared to the simple \textit{doublet} module map. 
@@ -231,7 +233,7 @@ Through metric learning, the transformation weights $\theta$ are adjusted to min
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/metric-learning-illustration.png}
-    \caption{Principle of deep metric learning. Starting from (a) labelled data which are difficult to separate in real space, (b) a distance metric is defined to measure the similarity between data points in an embedding space, in this case a simple Euclidean distance. (c) A transformation from real to embedding space is learned, such that examples of the same class are close together, whereas those of different classes are pushed away from each other. (d) The transformation is a simple feed-forward network applied to to all instances of the dataset. (e) After training, examples of different classes are well-separated, and clusterizable. Figure taken from reference \cite{metric-learning-rev2}.}
+    \caption{Principle of deep metric learning. Starting from (a) labelled data which are difficult to separate in real space, (b) a distance metric is defined to measure the similarity between data points in an embedding space, in this case a simple Euclidean distance. (c) A transformation from real to embedding space is learned, such that examples of the same class are close together, whereas those of different classes are pushed away from each other. (d) The transformation is a simple feed-forward network applied to to all instances of the dataset. (e) After training, examples of different classes are well-separated, and clusterizable \cite{metric-learning-rev2}.}
     \label{fig:metric-learning-illus}
 \end{figure}
 
@@ -254,7 +256,7 @@ The contrastive loss defined with a margin is also called the contrastive hinge 
 Note that the loss is computed from pairs of nodes, which can be regarded as edges, but we do not have edges at this point. 
 A training sample $E$ must therefore be generated from the input nodes. 
 Again, a simple choice of all $N(N-1)$ possible unordered pairs of node is far too many to fit on memory and would overwhelmingly contain fake edges. 
-Instead, we construct $E$ as
+Instead, we construct $E$ using a technique called hard negative mining \cite{robinson2021contrastivelearninghardnegative}
 \begin{equation}
     \label{eq:9.7}
     {E} = E_{truth, target} \cup E_{hnm} \cup E_{random},
@@ -334,7 +336,7 @@ An iteration over the train set (epoch) takes approximately 1 hour, and the mode
 \section{Result}
 \label{sect:graph-contruction-performance}
 
-Shown in figure \ref{fig:mm-eff} is the averaged edge efficiency of graphs constructed with the \textbf{\textsc{MinMax}} and \textbf{\textsc{MeanRMS}} selections as a function of the pseudorapidity $\eta$\footnote{Here the pseudorapidity of an edge is defined as that of the inner node.} and transverse momentum $p_T$. 
+Shown in figure \ref{fig:mm-eff} is the averaged edge efficiency of graphs constructed with the \textbf{\textsc{MinMax}} and \textbf{\textsc{MeanRMS}} selections as a function of the pseudorapidity $\eta$\footnote{Here the pseudorapidity of an edge is defined as that of the inner node.} and transverse momentum $\pT$. 
 The Module Map method under both choices of edge cuts produces efficiency $\epsilon\ge 99.5\%$ across $\eta$. 
 Averaged across test events, the \textbf{\textsc{MeanRMS}} selection is slightly less efficient than the \textbf{\textsc{MinMax}} counterpart by $0.2\%$, due to tighter thresholds on geometric observables. 
 The former's inefficiency is observed in the barrel region $(\abs{\eta}<2)$ and the very forward region $(\abs{\eta} \approx 4)$.
@@ -367,7 +369,7 @@ The \textbf{\textsc{MeanRMS}} selection produces graphs having $\expval{|V|} = (
     \caption{}
     \label{subfig:mm-eff-meanrms-pt}
 \end{subfigure}
-    \caption{Graph construction efficiency of the Module Map approach as a function of $\eta$ (upper) and $p_T$ (lower), using the MinMax selection (left) and MeanRMS selection (right). }
+    \caption{Graph construction efficiency of the Module Map approach as a function of $\eta$ (upper) and $\pT$ (lower), using the MinMax selection (left) and MeanRMS selection (right). }
     \label{fig:mm-eff}
 \end{figure}
 
@@ -376,15 +378,15 @@ It allows the GNN to be trained with better class balance, because the majority 
 In addition, a smaller graph leads to better latency and smaller memory footprint, which are important factors in inference. 
 Therefore, graphs produced by both selections are examined in later stages of the reconstruction chain.
 
-Both of the module map selections show good edge efficiency over the $p_T$ range, reaching $\epsilon \ge 99\%$ (figures \ref{subfig:mm-eff-minmax-pt} and \ref{subfig:mm-eff-meanrms-pt}).
-A slight decrease is observed at the high-$p_T$ region, above $p_T \ge 5$ GeV, which, as we will see in the next chapters, is a common occurrence in the GNN4ITk chain.
-% As we will see in subsequent chapters, this inefficiency at high-$p_T$ is a common occurrence in the GNN4ITk chain. 
-It can be attributed to the rarity of high-$p_T$ particles in the training data, as discussed in section \ref{sect:eval-metrics}, which affects the coverage of possible module connections produced by high-$p_T$ particles.
+Both of the module map selections show good edge efficiency over the $\pT$ range, reaching $\epsilon \ge 99\%$ (figures \ref{subfig:mm-eff-minmax-pt} and \ref{subfig:mm-eff-meanrms-pt}).
+A slight decrease is observed at the high-$\pT$ region, above $\pT \ge 5$ GeV, which, as we will see in the next chapters, is a common occurrence in the GNN4ITk chain.
+% As we will see in subsequent chapters, this inefficiency at high-$\pT$ is a common occurrence in the GNN4ITk chain. 
+It can be attributed to the rarity of high-$\pT$ particles in the training data, as discussed in section \ref{sect:eval-metrics}, which affects the coverage of possible module connections produced by high-$\pT$ particles.
 % Even though it does not ``learn" to recognize patterns in machine learning argot, the module map memorizes the module connections in the training events, and reproduces them in an inference event. 
 The Module Map can only create an edge in the inferred event if it has seen the same edge during its construction
 In other words, in order for a true connection to appear in the inferred graph, the corresponding pair of modules must have been consecutively traversed by a particle in the training events.
-However, high-$p_T$ particles constitute but a small portion of final-state particles (figure \ref{subfig:pt-spectrum}), and those observed from the training event might not cover all possible trajectories through the detector's modules.
-As a result, it is more likely that a high-$p_T$ connection from a target particle in an inferred event was not seen in the training events, leading to inefficiency.
+However, high-$\pT$ particles constitute but a small portion of final-state particles (figure \ref{subfig:pt-spectrum}), and those observed from the training event might not cover all possible trajectories through the detector's modules.
+As a result, it is more likely that a high-$\pT$ connection from a target particle in an inferred event was not seen in the training events, leading to inefficiency.
 
 \begin{figure}[h!]
 \begin{subfigure}[b]{0.49\textwidth}
@@ -399,21 +401,21 @@ As a result, it is more likely that a high-$p_T$ connection from a target partic
     \caption{}
     \label{subfig:metric-learning-eff-pt}
 \end{subfigure}
-\caption{Graph construction efficiency of the Metric learning approach as a function of $\eta$ (a) and $p_T$ (b), averaged over 1000 $t\bar{t}$ events. }
+\caption{Graph construction efficiency of the Metric learning approach as a function of $\eta$ (a) and $\pT$ (b), averaged over 1000 $t\bar{t}$ events. }
 \label{fig:metric-learning-efficiency}
 \end{figure}
 
-The efficiency of graphs constructed with the Metric Learning method as a function of $\eta$ and $p_T$ is shown in figure \ref{fig:metric-learning-efficiency}. 
+The efficiency of graphs constructed with the Metric Learning method as a function of $\eta$ and $\pT$ is shown in figure \ref{fig:metric-learning-efficiency}. 
 Good edge efficiency is observed across the $\eta$ range, averaging at $99.79\%$, on par with those from the Module Map under the \textbf{MinMax} selection, but with a considerably larger edge set, $\abs{V} = (6.92\pm 1.72)\times 10^6$, compared to just $(1.24\pm 0.36)\times 10^6$. 
 As already discussed, the increased graph size will pose a problem for the edge-classifying GNN, so the graph is pruned using a light-weight neural network, which will be discussed in section \ref{sect:chap-gnn-filter-network}.
-Although good efficiency is observed throughout the $p_T$ range, a slight decrease appears at $p_T>5$ GeV, which, similar to what that of the Module Map method, can be attributed to small training statistics at high $p_T$.
+Although good efficiency is observed throughout the $\pT$ range, a slight decrease appears at $\pT>5$ GeV, which, similar to what that of the Module Map method, can be attributed to small training statistics at high $\pT$.
 The metric learning model learns to minimize the distance between space points belonging to the same particle via an attractive term in the loss function (equation \eqref{eq:9.6}), which can be rewritten as
 \begin{equation}
     \label{eq:9.8}
-\mathcal{L}_{\theta} = E[d_\theta] =   \left( \sum_{p_T} E[d_{\theta} | p_T, \mathrm{target}] P[p_T|\mathrm{target}] P[\mathrm{target}] \right)  +  E[r-d_{\theta}|\mathrm{fake}] P[\mathrm{fake}],
+\mathcal{L}_{\theta} = E[d_\theta] =   \left( \sum_{\pT} E[d_{\theta} | \pT, \mathrm{target}] P[\pT|\mathrm{target}] P[\mathrm{target}] \right)  +  E[r-d_{\theta}|\mathrm{fake}] P[\mathrm{fake}],
 \end{equation}
 where $E[X]$ and $P[A]$ denote unconditional expectation value and probability, and $E[X|A]$ and $P[X|A]$ the conditional counterpart. 
-The first term on the right-hand size, representing the attractive loss, is a sum over the $p_T$-dependant mean distance between nodes connected by a target edge, weighted by $P[p_T|\mathrm{target}]$, the probability that the edge comes from a particle having transverse momentum $p_T$.
-As seen on figure \ref{subfig:pt-spectrum}, $P[p_T|\mathrm{target}]$ decreases monotonically with $p_T$, down-weighing the loss contribution, and thus directing the attention away from high-momentum particles.
-As the curvature, which highly depends on $p_T$, is an important track pattern, the lack of high-$p_T$ examples impacts the performance of not only the metric learning, but also throughout the GNN4ITk algorithm.
+The first term on the right-hand size, representing the attractive loss, is a sum over the $\pT$-dependant mean distance between nodes connected by a target edge, weighted by $P[\pT|\mathrm{target}]$, the probability that the edge comes from a particle having transverse momentum $\pT$.
+As seen on figure \ref{subfig:pt-spectrum}, $P[\pT|\mathrm{target}]$ decreases monotonically with $\pT$, down-weighing the loss contribution, and thus directing the attention away from high-momentum particles.
+As the curvature, which highly depends on $\pT$, is an important track pattern, the lack of high-$\pT$ examples impacts the performance of not only the metric learning, but also throughout the GNN4ITk algorithm.
 

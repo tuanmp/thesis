@@ -93,7 +93,7 @@ A track candidate is a set of measurements made by sensitive detector elements o
 The latter is mathematically represented by a set of parameters describing its position and momentum as it traverses the detector. 
 Although in idealized situations, the track may be parametrized by constants of motion, in a realistic detector, even these constants vary over time, due to random material effects. 
 Therefore, a necessary ingredient to describe the trajectory is the solution to the equation of motion given the detector setup. 
-From an initial value and the precise magnetic field on a dense grid of sampling points, the equation of motion is numerically integrated to obtain the track model. 
+From an initial value and the precise magnetic field on a dense grid of sampling points, the equation of motion is numerically integrated to obtain the a description of that particle state as it evolves along the trajectory. 
 
 Let $\bfx\in \mathbb{R}^d$ represent the state of the particle and vary as a function of the arc length $s$ along the trajectory\footnote{Since $s=vt$, this is equivalent to parametrization in time.}, so that 
 \beq
@@ -117,7 +117,7 @@ The experimental noise $\epsilon_i$ also depends on the type of measuring surfac
 However, it is generally assumed to be unbiased with finite variance, namely
 \beq
 \label{eq:track-fit:3}
-E[\epsilon_i] = \mathbf{0}, \quad \sigma(\epsilon_i^{(j)}) = 0\,\forall \, j \in [n],
+E[\epsilon_i] = \mathbf{0}, \quad 0<\sigma(\epsilon_i^{(j)}) < +\infty ,\forall \, j \in [n],
 \eeq
 where the superscript denotes the $j$-th component of the $n$-dimensional error vector.
 The covariance matrix of $\epsilon$ is an important ingredient of the least-square fit, denoted by
@@ -159,7 +159,7 @@ and (2) of minimum variance
 \label{eq:track-fit:9}
 E[(F(M) - \bfx_0)^2] = \min_{F'} E[(F'(M) - \bfx_0)^2]
 \eeq
-The Gauss-Markov theorem \cite{gauss-markov} states that among the class of linear and unbiased estimators, the Least Squares Estimator (LSE) has minimum variance, provided a linear track model, purely statistical\footnote{No dependence of $\bfx$}, unbiased and uncorrelated errors $\epsilon_i$. 
+The Gauss-Markov theorem \cite{gauss-markov} states that among the class of linear and unbiased estimators, the Least Squares Estimator (LSE) has minimum variance, provided a linear track model, purely statistical\footnote{i.e. independent of $\bfx$}, unbiased and uncorrelated errors $\epsilon_i$. 
 The LSE is obtained by minimizing the $\chi^2$-function, defined as
 \beq
 \label{eq:track-fit:10}
@@ -177,11 +177,11 @@ The estimator is simply the solution to
 \label{sect:kalman-filter}
 
 Because the LSM considers all measurements at the same time, it is a global fitting method. 
-It can be shown that in situations where the material effects described in section \ref{sect:material-effects} cannot be ignore, the minimization of the $\chi^2$-function translates to the inversion of a non-diagonal covariance matrix whose dimension grows with the number of measurements $N$. 
+It can be shown that in situations where the material effects described in section \ref{sect:material-effects} cannot be ignored, the minimization of the $\chi^2$-function translates to the inversion of a non-diagonal covariance matrix whose dimension grows with the number of measurements $N$. 
 This computation can become a significant bottleneck in complex and granular detectors (see chapter 3 of reference \cite{Regler2000-ie} for more details).
 
 The Kalman formalism \cite{Mankel_2004, BILLOIR1984352, FRUHWIRTH1987444} offers a faster alternative to global fit that, crucially, yields optimal estimates for Gaussian measurement uncertainties. 
-The track states still evolves as a linear dynamical system.
+The track state still evolves as a linear dynamical system.
 Multiple scattering and energy loss due to material interactions are modelled as random process noise $\mathbf{w}$ added to the transport equation 
 \beq
 \label{eq:track-fit:12}
@@ -308,7 +308,7 @@ This contribution will only get worse at pile-up 200, due to the strong scaling 
 Within Inner Tracking, the tracking finding step described in this chapter consumes the largest CPU resource. 
 Listed in table \ref{tab:tracking-time-breakdown} are the cost of each step in the tracking stage, assuming the pile-up levels of 140 and 200. 
 In the default tracking chain, the tracking finding and ambiguity resolution steps dominate the total CPU consumption. 
-Although listed as separate items, the former's performance is severely degraded without the latter, so they should be considered together as one item, which occupies $83\%$ of the overall computing needs at pile-up 200.
+Although listed as separate items, the former's performance is severely degraded without the latter, so they should be considered together as one item, which occupies $83\%$ of the overall computing consumption for inner tracking at pile-up 200.
 
 \begin{table}[h!]
     \centering

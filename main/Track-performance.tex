@@ -23,7 +23,7 @@ Finally, section \ref{sect:track-performance} is an apple-to-apple comparison be
 As mentioned in section \ref{sect:track-fit}, the tracking model used in ATLAS considers the local coordinates of individual clusters as measurements.
 A GNN track candidate, however, is a list of space points reconstructed from these clusters, according to section \ref{sect:cluster-spacepoint}. 
 To carry out the fit, the space points are first matched to their corresponding clusters. 
-A pixel space point is matched to a unique pixel clusters, while a strip space point is matched to two strip clusters, each from one side of a barrel stave or an endcap petal (see section \ref{sect:itk-overview}). 
+A pixel space point is matched to a unique pixel cluster, while a strip space point is matched to two strip clusters, each from one side of a barrel stave or an endcap petal (see section \ref{sect:itk-overview}). 
 The building block of track candidates is a major difference between the GNN-based and the current tracking algorithm, which has numerous implications in the interpretation of results.
 
 To fully characterize a charged particle's trajectory in a magnetic field, the parametrization must specify its global position, momentum and charge at any given point. 
@@ -101,9 +101,9 @@ Since the cost function is no longer linear, an analytical solution to the equat
 \eeq
 does not exist.
 Instead, it must be numerically minimized, starting from some initial value $\tilde{\mathbf{x}}$.
-A circle fit using the conformal map method is performed over the $(x,y)$ coordinates the first three space points of the track candidate. 
+To estimate $\tilde{\mathbf{x}}$, a circle fit using the conformal map method is performed over the $(x,y)$ coordinates the first three space points of the track candidate. 
 This procedure is described in reference \cite{HANSROUL1988498}. 
-The rough estimate is fed into the optimizer, along with the cost function to obtain a globally optimal estimate $\hat{\mathbf{x}}$ of the track parameters. 
+The crude estimate is fed into the optimizer, along with the cost function to obtain a globally optimal estimate $\hat{\mathbf{x}}$ of the track parameters. 
 \beq
 \label{eq:track-performance:6}
 \hat{\mathbf{x }} = \min_{\mathbf{x}} \mathcal{L}_M(\mathbf{x}, \vartheta)
@@ -173,7 +173,7 @@ Most important among them are the track parameter resolution, defined as
 The tracking performance of the GNN-based algorithm is presented in this section. 
 Track candidates constructed from 1000 $t\bar{t}$ events at $\expval{\mu}=200$ using the GNN4ITk algorithm are processed in \textsc{Athena}\footnote{The ATLAS offline analysis framework}. 
 These are the same events used to evaluate the individual stages of the GNN-based pipeline presented in chapters \ref{chap:graph-construction} and \ref{chap:gnn}. 
-We implemented a new component, denoted \texttt{InDetGNNTracking}, in \textsc{Athena} to interface between the GNN-based track builder and the legacy event reconstruction chain \cite{atlas_collaboration_2021_4772550}.
+We implemented a new component, denoted \texttt{InDetGNNTracking}, in \textsc{Athena} to interface between the GNN-based track builder and the current event reconstruction chain \cite{atlas_collaboration_2021_4772550}.
 The same events are fed to the Kalman Filter under the configuration outlined in ref. \cite{Aad_2025}.
 Tracking performance is evaluated using the standard \texttt{InDetPhysValMonitoring} tool in the software framework.
 
@@ -182,7 +182,7 @@ In production, the same selections are applied to reconstructed tracks before su
 % The same set of selections also applied in production on reconstructed track candidates.
 Reference \cite{Aad_2025} studies the expected tracking performance of the ITk at $\expval{\mu}=200$ under the CKF, for which a set of such selection criteria is optimized.
 These $\eta$-dependent criteria, shown in table \ref{tab:track-reco-cuts}, are hereafter referred to as the \textbf{nominal cuts}.
-\begin{table}[h]
+\begin{table}[h!]
     \centering
     \begin{tabular}{|l|c|c|c|} \hline
        \multirow{2}{*}{Requirements}  & \multicolumn{3}{c|}{Pseudorapidity interval} \\ \cline{2-4}
@@ -190,7 +190,7 @@ These $\eta$-dependent criteria, shown in table \ref{tab:track-reco-cuts}, are h
          Number of clusters & $\ge 9$ & $\ge 8$ & $\ge 7$ \\
          Number of holes & $\le 2$ & $\le 2$ & $\le 2 $ \\
          Number of pixel clusters & $\ge 1$ & $\ge 1$ & $\ge 1$ \\
-         $p_T$ [MeV] & $> 900$ & $>400$ & $>400$ \\
+         \pT [MeV] & $> 900$ & $>400$ & $>400$ \\
          $\abs{d_0}$ [mm] & $< 2.0$ & $<2.0$ & $<10.0$ \\
          $\abs{z_0}$ [cm] & $< 20.0$ & $<20.0$ & $<20.0$ \\
          \hline     
@@ -199,7 +199,7 @@ These $\eta$-dependent criteria, shown in table \ref{tab:track-reco-cuts}, are h
     \label{tab:track-reco-cuts}
 \end{table}
 Among these requirements, a hole is defined as the absence of a cluster between the first and the last hit on track, when the interpolated trajectory intersects a layer of active sensors. 
-$p_T$, $d_0$ and $z_0$ are respectively the transverse momentum, the transverse and longitudinal impact parameters, as described in section \ref{sect:chi2-fit}.
+\pT, $d_0$ and $z_0$ are respectively the transverse momentum, the transverse and longitudinal impact parameters, as described in section \ref{sect:chi2-fit}.
 The dependence on $\eta$ accounts for the difference in detector layout and material distribution, and helps maintain uniform reconstruction efficiency throughout the detector. 
 
 It is important to note that the CKF and the GNN-based algorithm are two different techniques running on different event-level inputs, the former directly consuming the recorded clusters while the latter using space points formed from these clusters, adding an extra layer of abstraction. 
@@ -217,7 +217,7 @@ We thus examine a second set of selections, denoted \textbf{relaxed cuts} and sh
          \textbf{Number of clusters} & $\ge \mathbf{7}$ & $\ge \mathbf{7}$ & $\ge 7$ \\
          \textbf{Number of holes} & $\le \mathbf{4}$ & $\le \mathbf{4}$ & $\le \mathbf{4} $ \\
          Number of pixel clusters & $\ge 1$ & $\ge 1$ & $\ge 1$ \\
-         $p_T$ [MeV] & $> 900$ & $>400$ & $>400$ \\
+         \pT [MeV] & $> 900$ & $>400$ & $>400$ \\
          $\abs{d_0}$ [mm] & $< 2.0$ & $<2.0$ & $<10.0$ \\
          $\abs{z_0}$ [cm] & $< 20.0$ & $<20.0$ & $<20.0$ \\
          \hline     
@@ -276,7 +276,7 @@ The logical conclusion of these observation is that the excess holes and deficie
     \caption{}
     \label{subfig:nominal-vs-relaxed-fake-mu}
 \end{subfigure}
-    \caption{A comparison of the GNN-based track candidates selected by the nominal and the relaxed criteria in representative performance metrics. Top plots show the efficiency as functions of the truth pseudorapditiy $\eta$ (a) and transverse momentum $p_T$ (b). Bottom plots show the rate of fake tracks as functions of $\eta$ (c) and the pile-up level $\mu$ (d).}
+    \caption{A comparison of the GNN-based track candidates selected by the nominal and the relaxed criteria in representative performance metrics. Top plots show the efficiency as functions of the truth pseudorapditiy $\eta$ (a) and transverse momentum \pT (b). Bottom plots show the rate of fake tracks as functions of $\eta$ (c) and the pile-up level $\mu$ (d).}
     \label{fig:nominal-vs-relaxed}
 \end{figure}
 
@@ -293,7 +293,7 @@ While the relaxed cuts increase the number of fake by a factor of 9 for the CKF,
 Therefore, for the CKF, requiring track candidates to satisfy the requirements in table \ref{tab:track-reco-cuts} is \textit{essential} to limit fake tracks and maintain good efficiency. 
 On the other hand, for the GNN4ITk, a relaxation in the minimum number of hits and the maximum number of holes in the strip region ($\abs{\eta}<2.6$) is necessary to cope with the input hit inefficiency, yet still guarantees low fake rate, thus achieving an optimal performance.
 
-\begin{table}[h]
+\begin{table}[h!]
     \centering
     \begin{tabular}{|l|c|c|} \hline
         Track selection & GNN4ITk & CKF \\ \hline
@@ -315,7 +315,7 @@ In light of this discussion, we propose to apply a minimally modified set of cut
          {Number of clusters} & $\ge 7$ & $\ge 7$ & $\ge 7$ \\
          {Number of holes} & $\le 4$ & $\le 4$ & $\le 2 $ \\
          Number of pixel clusters & $\ge 1$ & $\ge 1$ & $\ge 1$ \\
-         $p_T$ [MeV] & $> 900$ & $>400$ & $>400$ \\
+         \pT [MeV] & $> 900$ & $>400$ & $>400$ \\
          $\abs{d_0}$ [mm] & $< 2.0$ & $<2.0$ & $<10.0$ \\
          $\abs{z_0}$ [cm] & $< 20.0$ & $<20.0$ & $<20.0$ \\
          \hline     
@@ -329,10 +329,10 @@ In light of this discussion, we propose to apply a minimally modified set of cut
 
 In this section, we compare the reconstruction efficiency of the three variants of the GNN-based algorithm to that of the CKF.
 Track candidates produced by the former are required to pass the quality cuts in table \ref{tab:track-reco-cuts-semi-relaxed}, and those produced by the latter are required to pass the cuts in table \ref{tab:track-reco-cuts}. 
-The tracking efficiency as functions of the truth $\eta$ and $p_T$ are respectively shown in figures \ref{subfig:tracking-eff-eta} and \ref{subfig:tracking-eff-pt}. 
+The tracking efficiency as functions of the truth $\eta$ and \pT are respectively shown in figures \ref{subfig:tracking-eff-eta} and \ref{subfig:tracking-eff-pt}. 
 The bottom plot in each figure shows the ratio between each of the GNN-based curves to the CKF-based curve.
 
-\begin{figure}
+\begin{figure}[h!]
 \centering
 \begin{subfigure}{0.65\textwidth}
     \centering
@@ -346,41 +346,41 @@ The bottom plot in each figure shows the ratio between each of the GNN-based cur
     \caption{}
     \label{subfig:tracking-eff-pt}
 \end{subfigure}
-\caption{Tracking efficiency as functions of the truth pseudorapidity $\eta$ (a) and transverse momentum $p_T$ (b). The bottom plots show the ratio of the GNN-based curves to the CKF-based curve.}
+\caption{Tracking efficiency as functions of the truth pseudorapidity $\eta$ (a) and transverse momentum \pT (b). The bottom plots show the ratio of the GNN-based curves to the CKF-based curve.}
 \label{fig:tracking-eff}
 \end{figure}
 
-The tracking efficiency is not non-uniform throughout the detector. 
-All reconstruction algorithms reaches the highest efficiency at $\abs{\eta}=3.0$ and $\eta=0$, and the lowest at $\abs{\eta}=1.8$.
-[Discussion on the general trend]
+The tracking efficiency varies as a function of truth pseudorapidity.
+All reconstruction algorithms reaches the maximum efficiency at $\abs{\eta}=3.0$ and $\eta=0$, and minimum at $\abs{\eta}=1.8$, symmetric around $\eta=0$
+The 
 
 Among the GNN-based trackers, the best efficiency is observed in the \textcolor{blue}{\textbf{Module Map MinMax}} variant, followed closely by the \textcolor{green}{\textbf{MeanRMS}} variant.
-All three variants yield similar efficiency at low transverse momentum ($p_T<5$ GeV), but start to diverge at high $p_T$.
-The \textcolor{orange}{\textbf{Metric Learning}} is slightly less efficient for $p_T > 5$ GeV than the Module Map variants.
+All three variants yield similar efficiency at low transverse momentum ($\pT<5$ GeV), but start to diverge at high \pT.
+The \textcolor{orange}{\textbf{Metric Learning}} is slightly less efficient for $\pT > 5$ GeV than the Module Map variants.
 On the pseudorapidity spectrum, it has lower efficiency in the strip barrel in the range $\abs{\eta}<1$, but otherwise identical to the other GNN-based variants.
 Particles with a large transverse momentum are more likely to be concentrated in the central barrel, i.e. having small pseudorapidity. 
-Graph construction using the Metric Learning is less efficient than the Module Map at high $p_T$, as shown in figure \ref{subfig:filter-eff-eta}, which accumulates throughout the pipeline. 
-Consequently for the former method, the efficiency relatively degrades with increasing $p_T$, and, since large-$p_T$ particles populates low $\abs{\eta}$, towards the central region.
+Graph construction using the Metric Learning is less efficient than the Module Map at high \pT, as shown in figure \ref{subfig:filter-eff-eta}, which accumulates throughout the pipeline. 
+Consequently for the former method, the efficiency relatively degrades with increasing \pT, and, since large-\pT particles populates low $\abs{\eta}$, towards the central region.
 
 All variants of the GNN4ITk algorithm produce tracking efficiency exceeding that of the CKF when plotted as a function of $\eta$, in which each bin is the conditional efficiency averaged over all particle momenta. 
-On the $p_T$ spectrum, however, it is clear that the improvement is not evenly distributed. 
-All of the efficiency improvement occurs on particles with low $p_T$, as seen on the ratio plot of figure \ref{subfig:tracking-eff-pt}, the performance at high $p_T$ is largely similar to that of the CKF.
-High-$p_T$ particles are rare, as they commonly originate from the hard-scattering collision, and concentrate around the barrel region.
-The absence of efficiency improvement at high $p_T$ partially explains the comparatively smaller efficiency boost near $\eta=0$. 
-In contrast, low-$p_T$ particles constitute the majority of target particles, orders of magnitude more populous than their high-$p_T$ counterparts, and are distributed quite evenly throughout the detector, which explains the excess efficiency in all $\eta$ bins on figure \ref{subfig:tracking-eff-eta}. 
+On the \pT spectrum, however, it is clear that the improvement is not evenly distributed. 
+All of the efficiency improvement occurs on particles with low \pT, as seen on the ratio plot of figure \ref{subfig:tracking-eff-pt}, the performance at high \pT is largely similar to that of the CKF.
+High-\pT particles are rare, as they commonly originate from the hard-scattering collision, and concentrate around the barrel region.
+The absence of efficiency improvement at high \pT partially explains the comparatively smaller efficiency boost near $\eta=0$. 
+In contrast, low-\pT particles constitute the majority of target particles, orders of magnitude more abundant than their high-\pT counterparts, and are distributed quite evenly throughout the detector, which explains the excess efficiency in all $\eta$ bins on figure \ref{subfig:tracking-eff-eta}. 
 
 Though not simply related, tracking efficiency is determined by the edge-level efficiency encountered the results of previous chapters.
-The impact of the uneven $p_T$ distribution in training data on edge-level performance was already seen in section \ref{sect:filter-results}. 
-All models in the GNN4ITk are trained on data which predominantly features low-$p_T$ tracks. 
+The impact of the uneven \pT distribution in training data on edge-level performance was already seen in section \ref{sect:filter-results}. 
+All models in the GNN4ITk are trained on data which predominantly features low-\pT tracks. 
 They learn to minimize the classification loss of true edges from these tracks, possibly at the expense of the other less abundant particles.
-As discussed in section \ref{subsect:ignn-result}, increasing the weight of high-$p_T$ edges in the loss function proves ineffective.
-For now, despite the degradation in edge efficiency, the efficiency of the GNN-based tracker at high momentum matches that of the CKF in absolute terms, with which we content. 
-It remains for future work to deal with this important challenge.
+As discussed in section \ref{subsect:ignn-result}, increasing the weight of high-\pT edges in the loss function proves ineffective.
+For now, despite the degradation in the edge efficiency, the efficiency of the GNN-based tracker at high momentum matches that of the CKF in absolute terms. 
+Increasing the per-edge performance of the pipeline at high \pT is a priority for future work.
 
-% The tracking efficiency as functions of the particle's pseudorapidity $\eta$ and transverse momentum $p_T$ are respectively shown in figures \ref{subfig:tracking-eff-eta} and \ref{subfig:tracking-eff-pt}, for tracks reconstructed by the CKF and the GNN-based algorithm using graphs created by the Metric Learning and Module Map MeanRMS methods. 
+% The tracking efficiency as functions of the particle's pseudorapidity $\eta$ and transverse momentum \pT are respectively shown in figures \ref{subfig:tracking-eff-eta} and \ref{subfig:tracking-eff-pt}, for tracks reconstructed by the CKF and the GNN-based algorithm using graphs created by the Metric Learning and Module Map MeanRMS methods. 
 % The bottom plot in each figure shows the ratio between each of the GNN-based curves to the CKF-based curve.
 
-% Figures  respectively show the tracking efficiency as functions of the particle's pseudorapidity $\eta$ and transverse momentum $p_T$.
+% Figures  respectively show the tracking efficiency as functions of the particle's pseudorapidity $\eta$ and transverse momentum \pT.
 % \newpage
 % \begin{sidewaysfigure}
 % \centering
@@ -433,23 +433,23 @@ Despite more truth particles are reconstructed by the GNN than by the CKF, evide
 In other words, we achieve higher efficiency without paying the cost of building more low-quality, unassociated tracks. 
 It lends support to the use of selection criteria that are adapted to a specific algorithm of interest, rather than rigidly adopting a predetermined working point optimized for a different one. 
 % In the case of the GNN4ITk, many true particle tracks are uniquely reconstructed but would not be selected by the nominal selections due to the missing single clusters. 
-% respectively show the tracking fake rate as functions of the particle's pseudorapidity $\eta$ and transverse momentum $p_T$.
+% respectively show the tracking fake rate as functions of the particle's pseudorapidity $\eta$ and transverse momentum \pT.
 
 \begin{figure}[h!]
 \centering
 \begin{subfigure}[b]{0.75\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/ckf-gnn/FakeRate/fakerate_vs_eta.pdf}
-    \caption{Vs eta}
+    \caption{}
     \label{subfig:tracking-fake-eta}
 \end{subfigure}
 \begin{subfigure}[b]{0.75\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/ckf-gnn/FakeRate/fakerate_vs_mu.pdf}
-    \caption{vs $\mu$}
+    \caption{}
     \label{subfig:tracking-fake-mu}
 \end{subfigure}
-    \caption{The proportion of reconstructed tracks reconstructed by the GNN4ITk and CKF chains having matching probability less than 0.5. The bottom plots show the ratio of the GNN-based curves to the CKF-based curve.}
+    \caption{The proportion of reconstructed tracks reconstructed by the GNN4ITk and CKF chains having matching probability less than 0.5 as a function of the track pseudorapidity $\eta$ (a) and the truth pile-up (b). The bottom plots show the ratio of the GNN-based curves to the CKF-based curve.}
     \label{fig:tracking-fake-eta-mu}
 \end{figure}
 
@@ -495,7 +495,7 @@ The distributions from the two Module Map variants appear similar, while that of
 % Impact parameter resolution is heavily determined by the innermost hit on the track candidate. 
 The good resolution observed for the GNN-based algorithm can be explained by the efficiency in finding the hit on the innermost pixel layer, which provides a strong constraint on the impact parameters. 
 Figure \ref{fig:n-innermost-pix} shows the number innermost pixel hits as a function of track pseudorapidity.
-The Module Map variants build track with the same average number of innermost pixel hits as does the CKF, with tracks in the barrel region having $\expval{N_{pix,innermost}}=1$.
+The Module Map variants build tracks with the same average number of innermost pixel hits as does the CKF, with tracks in the barrel region having $\expval{N_{pix,innermost}}=1$.
 The Metric Learning variant is slightly less hit-efficient in the barrel, which would explain its lower resolution.
 
 \begin{figure}[h!]
@@ -529,49 +529,49 @@ Here we can clearly observe the correlation between the number of innermost pixe
 \newpage
 The transverse momentum resolution as a histogram is shown in figure \ref{subfig:res-pt-hist} and as a function of $\eta$ in figure \ref{subfig:res-pt-eta}.
 Unlike the other parameters' resolution, the dimensionless transverse momentum resolution is computed as $$
-\sigma(p_T) = p_{T,truth}  \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right).$$
+\sigma(\pT) = p_{T,truth}  \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right).$$
 While other track parameters are directly obtained from the $\chi^2$ fit, the transverse momentum is a derived quantity in the ATLAS parametrization, as evidenced from equation \eqref{eq:track-performance:1}. 
 There is no straightforward relationship between its resolution and elements of the global fit.
-However, given that it is derived from fit parameter $q/p$, which is influenced by material interaction, one expects degrading $p_T$ resolution with more detector material encountered on the trajectory.
+However, given that it is derived from fit parameter $q/p$, which is influenced by material interaction, one expects degrading \pT resolution with more detector material encountered on the trajectory.
 This effect is observed on figure \ref{subfig:res-pt-eta},  viewed in tandem with figure \ref{subfig:itk-rad-len}, which shows the material budget traversed by a straight track in radiation length as a function of the particle's pseudorapidity.
-The total radiation length increases generally with $\eta$, so the closer to the beamline is the particle, the more its energy--and thus momentum--is eroded, weakening the constraints on $p_T$. 
-In consequence, the $p_T$ resolution decreases monotonically with $\eta$.
+The total radiation length increases generally with $\eta$, so the closer to the beamline is the particle, the more its energy--and thus momentum--is eroded, weakening the constraints on \pT. 
+In consequence, the \pT resolution decreases monotonically with $\eta$.
 
 \begin{figure}[h!]
 \centering
 \begin{subfigure}[b]{0.65\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/ckf-gnn/Matched/Resolutions/Primary/res_ptqopt.pdf}
-    \caption{Transverse momentum resolution $p_T  \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$}
+    \caption{Transverse momentum resolution $\pT  \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$}
     \label{subfig:res-pt-hist}
 \end{subfigure}
 \begin{subfigure}[b]{0.65\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/ckf-gnn/Matched/Resolutions/Primary/resolution_vs_eta_ptqopt.pdf}
-    \caption{Transverse momentum resolution $p_T \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$ as a function of $\eta$}
+    \caption{Transverse momentum resolution $\pT \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$ as a function of $\eta$}
     \label{subfig:res-pt-eta}
 \end{subfigure}
-    \caption{Transverse momentum resolution shown as a histogram of $\sigma(p_T)$ (a) and a function of the truth pseudorapidity $\eta$ (b). }
+    \caption{Transverse momentum resolution shown as a histogram of $\sigma(\pT)$ (a) and a function of the truth pseudorapidity $\eta$ (b). }
     \label{fig:res-pt}
 \end{figure}
 
 The transverse momentum is proportional to the radius of the curved trajectory, which in turn is geometrically constrained by the hits found between the outermost hits of the track candidate\footnote{Intuitively, imagine fitting a circle passing through two outermost points. If no intermediate points exists, any of infinitely many possible circles is equally likely, hence null constraint. If an intermediate measurement exists with some measurement error, the closer a circle passes by the points, the more likely hit is. More intermediate measurements provide better constraining power, hence better resolution.}.
-Therefore, the $p_T$ resolution generally improves with the number of measurements and degrades with the number of holes of the track candidate. 
-In light of this principle, the difference in $p_T$ resolution between the GNN4ITk and the CKF may be elucidated.
-On figure \ref{subfig:res-pt-eta}, the observed $p_T$ resolution of the GNN4ITk is similar to that of the CKF in the all-pixel region, for $\abs{\eta}>2.6$.
+Therefore, the \pT resolution generally improves with the number of measurements and degrades with the number of holes of the track candidate. 
+In light of this principle, the difference in \pT resolution between the GNN4ITk and the CKF may be elucidated.
+On figure \ref{subfig:res-pt-eta}, the observed \pT resolution of the GNN4ITk is similar to that of the CKF in the all-pixel region, for $\abs{\eta}>2.6$.
 Both algorithms find relatively long tracks in this region, having on average 13--14 hits, shown in figure \ref{subfig:n-pix-hits}. 
 Track candidates from the GNN4ITk are slightly shorter than those from the CKF.
 However, these the former contains on average fewer holes, as seen on figure \ref{subfig:n-pix-holes}. 
 In other words, pixel-only GNN-tracks are shorter, but skip fewer layers than do the CKF counterparts.
-Though not simply quantifiable, these factors have opposite impacts on the $p_T$ resolution and likely yield similar performance in this region in effect.
+Though not simply quantifiable, these factors have opposite impacts on the \pT resolution and likely yield similar performance in this region in effect.
 
-On the other hand, in the barrel $(\abs{\eta}<2)$ and transition regions $(2<\abs{\eta}<2.6)$, the $p_T$ resolution of all GNN-based variants is lower than that of the CKF.
-The RMS width of the $\sigma(p_T)$-distribution from the GNN4ITk is at worst $8\%$ larger than from CKF.
+On the other hand, in the barrel $(\abs{\eta}<2)$ and transition regions $(2<\abs{\eta}<2.6)$, the \pT resolution of all GNN-based variants is lower than that of the CKF.
+The RMS width of the $\sigma(\pT)$-distribution from the GNN4ITk is at worst $8\%$ larger than from CKF.
 In this region, the GNN-based tracks contain fewer clusters and more holes than the CKF-based tracks.
 The gap is particularly pronounced in the strip detector, due to the presence of single clusters. 
 In the barrel, despite the same average number of pixel clusters and negligible numbers of pixel holes, the GNN4ITk finds about $90\%$ the average number of strip hits found by the CKF, and leaves up to 5 times the number of holes left by the latter.
 In the transition region, this trend repeats.
-The combination of cluster deficiency and enrichment of holes explains the degraded $p_T$ resolution in this region.
+The combination of cluster deficiency and enrichment of holes explains the degraded \pT resolution in this region.
 In general, the GNN, being trained on incomplete data, performs worse than the CKF does in the strip detector. 
 In addition, the relaxed track selection cuts in $\abs{\eta}<2.6$--range allow short and layer-skipping GNN tracks to pass through, contributing to their increased abundance.
 This is the trade-off we make in exchange for better efficiency.
@@ -607,9 +607,9 @@ This is the trade-off we make in exchange for better efficiency.
 \end{figure}
 
 \newpage
-In accordance with our discussion on figure \ref{subfig:res-pt-eta}, the $\eta$-independent GNN-based distributions of $\sigma(p_T)$ is manifestly wider than corresponding CKF-based distribution
-The tail-heavy histograms verify that the GNN4ITk yields lower $p_T$ resolution than does the CKF. 
-Notably, the GNN-based distributions are not symmetric around $\sigma(p_T)=0$, but instead leaning more heavily toward positive values of $\sigma(p_T)$. 
+In accordance with our discussion on figure \ref{subfig:res-pt-eta}, the $\eta$-independent GNN-based distributions of $\sigma(\pT)$ is manifestly wider than corresponding CKF-based distribution
+The tail-heavy histograms verify that the GNN4ITk yields lower \pT resolution than does the CKF. 
+Notably, the GNN-based distributions are not symmetric around $\sigma(\pT)=0$, but instead leaning more heavily toward positive values of $\sigma(\pT)$. 
 Although occurring with low statistics, this asymmetry is apparent and merits further investigation.
 We hypothesize that the asymmetric distribution of strip holes observed in figure \ref{subfig:n-strip-holes} could contribute to this phenomenon, but more careful inspection is needed.
 
@@ -619,13 +619,13 @@ We hypothesize that the asymmetric distribution of strip holes observed in figur
 % \begin{subfigure}[b]{0.65\textwidth}
 %     \centering
 %     \includegraphics[width=\textwidth]{figures/ckf-gnn/Matched/Resolutions/Primary/res_theta.pdf}
-%     \caption{Transverse momentum resolution $p_T  \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$}
+%     \caption{Transverse momentum resolution $\pT  \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$}
 %     \label{subfig:res-pt-hist}
 % \end{subfigure}
 % \begin{subfigure}[b]{0.65\textwidth}
 %     \centering
 %     \includegraphics[width=\textwidth]{figures/ckf-gnn/Matched/Resolutions/Primary/resolution_vs_eta_theta.pdf}
-%     \caption{Transverse momentum resolution $p_T \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$ as a function of $\eta$}
+%     \caption{Transverse momentum resolution $\pT \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right)$ as a function of $\eta$}
 %     \label{subfig:res-pt-eta}
 % \end{subfigure}
 %     \caption{Impact parameter resolution}

@@ -18,7 +18,7 @@ This chapter describes aspects of the ITk design and simulation, providing a fou
 The Inner Tracker consists of two silicon-based sub-detectors, a Pixel Detector close to the interaction point (IP) and a Strip Detector at a larger radius, and, unlike the Inner Detector, without the Transition Radiation Tracker. 
 They feature a total area of $180$ $\mathrm{m}^2$ with more than 5 billion readout channels, in comparison to $63$ $\mathrm{m}^2$ and 100 million channels in the ID, translating to a significant increase in granularity. 
 In the barrel region, the pixel subsystem comprises five layers and the strip subsystem four layers.
-Each of the endcaps is equipped with six strip rings feature a petal design and many thin pixel rings. 
+Each of the endcaps is equipped with six strip rings featuring a petal design and many thin pixel rings. 
 The layout of the ITk, demonstrated in figure \ref{fig:itk-layout}, is optimized to provide maximal hit coverage across the pseudorapidity range. 
 
 \begin{figure}[h]
@@ -214,7 +214,7 @@ The stopping power of a material on an incident particle in the momentum range r
     \label{eq:6.1}
     -\frac{dE}{dx} = 2\pi N_a r_e^2 m_e c^2 \frac{Z}{A} \left( \frac{z^2}{\beta^2}\right) \left[ \log \left( \frac{2m_e \gamma^2 v^2 W_{max}}{I^2}\right) - 2\beta^2 -\delta   \right],
 \end{equation}
-in which $r_e = 2.817\times 10^{-13}$ cm is the classical electron radius, $m_e$ the electron mass, $N_a$ the Avogadro's number, $I$ the mean excitation potential, $Z$ and $A$ the atomic number and atomic weight of the absorbing material, $z$ the charge of the incident particle in units of $e$, $\beta $ the $\frac{v}{c}$ ratio, $\gamma = (1-\beta^2)^{-1/2}$ the usual relativistic $\gamma$ factor, $\delta$ the density correction, and $W_{max}$ the maximum energy transfer in a single collision.
+in which $r_e = 2.817\times 10^{-13}$ cm is the classical electron radius, $m_e$ the electron mass, $N_a$ the Avogadro's number, $I$ the mean excitation potential, $Z$ and $A$ the atomic number and atomic weight of the absorbing material, $z$ the charge of the incident particle in units of $e$, $\beta $ the $\frac{v}{c}$ ratio, $\gamma = (1-\beta^2)^{-1/2}$ the relativistic $\gamma$ factor, $\delta$ the density correction, and $W_{max}$ the maximum energy transfer in a single collision.
 % \begin{itemize}
 %     \item $r_e = 2.817\times 10^{-13}$ cm: classical electron radius, 
 %     \item $m_e$: electron mass
@@ -303,7 +303,7 @@ It is straightforward to compare the two contributions of the total stopping pow
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.65\linewidth]{figures/rad-vs-col.png}
-    \caption{Contribution of radiative and collisional components in the total energy loss of electrons in copper as functions of electron energy. At a critical value $E_c=19.63$ MeV, radiative loss becomes the dominant mechanism. The energy range of electrons in HEP detectors is well within the Bremsstrahlung regime.}
+    \caption{Contribution of radiative and collisional components in the total energy loss of electrons in copper as functions of electron energy. At a critical value $E_c=19.63$ MeV, radiative loss becomes the dominant mechanism. The energy range of electrons in HEP detectors is well within the Bremsstrahlung regime \cite{Zyla:2020zbs}.}
     \label{fig:rad-vs-col}
 \end{figure}
 The critical energy at which the both components contribute equality to the total energy loss for a material is approximated by 

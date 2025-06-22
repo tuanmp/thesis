@@ -198,8 +198,8 @@ Non-simple subgraphs are a big drawback of the Connected Component approach.
 Their topology can range from a random hit being wrongly connected to an otherwise good track, to several tracks being merged together. 
 With the only tuneable parameter being the GNN edge score cut, it undergoes a trade-off between the edge efficiency and the fake edge rate. 
 A high score cut decreases the efficiency but also the number of fake edges, thus reducing the occurrence of non-simple subgraphs. 
-This edge efficiency reduction, however, often results in strong impact on the tracking efficiency of high-$p_T$ particles due to their small proportion. 
-To avoid compromising high-$p_T$ tracks, we must contend with a loose score cut and resolve the ensuing merged tracks.
+This edge efficiency reduction, however, often results in strong impact on the tracking efficiency of high-$\pT$ particles due to their small proportion. 
+To avoid compromising high-$\pT$ tracks, we must contend with a loose score cut and resolve the ensuing merged tracks.
 
 The Walkthrough algorithm is constructed as a solution to this issue.
 It still relies on the Connected Component method to quickly construct simple track candidates.
