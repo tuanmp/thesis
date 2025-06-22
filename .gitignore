@@ -12,3 +12,5 @@
 *latexmk
 *.fls
 *.lof
+*.DS_Store
+*-ERROR
