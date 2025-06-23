@@ -64,7 +64,7 @@ In this sense, pixel space point formation is obtained from a change in referenc
 While there is a one-to-one correspondence between a pixel cluster and a pixel space point, the space point formation in the strip detector is more complicated.
 Strip modules are finely segmented in only one direction, rendering each measurement one-dimensional, in contrast to the two-dimensional measurements on a pixel module.
 To obtain a three-dimensional position estimate, two strip clusters from the same layer are combined, as shown in fig. \ref{fig:sp-calcul-strip}. 
-The local position of the hit along the thinly segmented dimension is established with high resolution.
+The local position of the hit along the thinly segmented dimension is estimated with high resolution.
 Thanks to the stereo angle between the modules, an estimate of the second coordinate is made from the intersection of the strip cells, albeit with lower resolution. 
 These measurements are then transformed to a global position estimate, as described above. 
 
@@ -72,17 +72,27 @@ These measurements are then transformed to a global position estimate, as descri
 % As the number of cluster combinations exceeds the number of particles, ghost space points are created by false association of clusters. 
 
 In the current track reconstruction chain, space points are used to build track seeds, which are small groups of hits likely to originate from the same particle. 
-A dedicated seeding stage create large number of seeds each containing three space points, which are subsequently fed to a track building algorithm. 
+A dedicated seeding stage creates large number of seeds each containing three space points and subsequently feeds them to a track building algorithm. 
 The latter extends the seed by iteratively adding clusters that are compatible with the corresponding track state.
 A small number of clusters in the final track candidate come from the seed space points, and the rest from individually incorporated clusters on the track path.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/lone-clusters.png}    
+    \caption{Average number of lone strip clusters per track as a function of the particle pseudorapdity $\eta$.}
+    \label{fig:lone-cluster-distribution}
+\end{figure}
 
 Finally, we note an important consequence of the 2-cluster composition of the strip space point.
 Despite meticulous optimization of the detector layout, a particle does not always leave two hits on a strip layer. 
 Silicon sensors have inherent inefficiency, which means that a particle may traverse a detector module without inducing a signal.
 This phenomenon occurs in both sub-detectors of the ITk, but is very unlikely.
-More importantly, in the strip detector, a particle may approach a layer in a direction such that it intersects only one of two physical strip modules (see section \ref{sect:itk-overview} for a description of the strip detector). 
-For any reason, when a strip layer records a \textit{lone} cluster, it is ignored by the space point formation algorithm, resulting in a cluster inefficiency amongst the space points.
-This inefficiency is of limited consequence in the current ATLAS reconstruction chain, because space points are only used for track seeding.
+A more important inefficiency comes from the the strip detector, in which a particle may approach a layer in a direction such that it intersects only one of two physical strip modules (see section \ref{sect:itk-overview} for a description of the strip detector). 
+For any reason, when a strip layer records a \textit{lone} cluster, it is ignored by the space point formation algorithm, resulting in its absence from the space point collection.
+On figure \ref{fig:lone-cluster-distribution}, we observe that particles leave lone clusters when their pseudorapdity falls under the coverage of the strip detector at $\abs{\eta}<2.8$, 
+reaching up to one lone cluster per particle at $\abs{\eta}\simeq 1.8$.
+This means that if we look at the space point record, every particle in this region effectively skips a strip layer.
+This hit inefficiency is inconsequential in the current ATLAS reconstruction chain, because space points are only used for track seeding, and there is enough redundancy to cover all true particle seeds.
 However, an algorithm that builds tracks from space points would not see lone clusters in the input, which may cause potential impacts on its performance.
 This issue will become important for the new algorithm and be described in chapter \ref{chap:tracking-performance}.
 

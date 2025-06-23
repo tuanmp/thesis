@@ -24,7 +24,7 @@ As mentioned in section \ref{sect:track-fit}, the tracking model used in ATLAS c
 A GNN track candidate, however, is a list of space points reconstructed from these clusters, according to section \ref{sect:cluster-spacepoint}. 
 To carry out the fit, the space points are first matched to their corresponding clusters. 
 A pixel space point is matched to a unique pixel cluster, while a strip space point is matched to two strip clusters, each from one side of a barrel stave or an endcap petal (see section \ref{sect:itk-overview}). 
-The building block of track candidates is a major difference between the GNN-based and the current tracking algorithm, which has numerous implications in the interpretation of results.
+The building block of track candidates is a major difference between the GNN-based and the current tracking algorithm, which has implications in the interpretation of results.
 
 To fully characterize a charged particle's trajectory in a magnetic field, the parametrization must specify its global position, momentum and charge at any given point. 
 Various conventions satisfy this requirement. 
@@ -84,6 +84,11 @@ which is a block of the covariance matrix of the track parameters
 where $\mathbf{x}^{(i)}$ is the $i$-th component of the track parameters, $\sigma^2(X)$ the variance of $X$ and $\rho(X,Y)$ the covariance of $X$ and $Y$. 
 
 % A DISCUSSION ON TRACK PROPAGATION. THIS COULD BE MOVED TO THE CKF CHAPTER, BUT NECESSARY TO ADD A REMINDER HERE AND EMPHASIZE THE HOW MATERIAL EFFECTS ARE MODELLED.
+Given the track state $\bfx$ and a covariance $\mathbf{C}$ at any point on the trajectory, an estimate of the state at a another point $\bfx'$ can be obtained by numerically integrating the EOM, as described
+in section \ref{sect:chi2-fit}. 
+If the position of $\bfx'$ coincides with a sensitive element, an expected value of the corresponding measurement could be derived using equation \eqref{eq:track-performance:2}, allowing to write 
+the measurement error as a function of $\bfx$.
+Repeating this process, taking $\bfx$ as the initial value, we can define the measurement error of the entire track candidate and optimize for $\bfx$.
 
 Let $M=\{\mathbf{m}_1, \dotsc , \mathbf{m}_N\}$ be the set of all clusters matched to the track candidate. The cost function can be written as a function of an initial state $\mathbf{x}$ as
 \beq
@@ -351,16 +356,26 @@ The bottom plot in each figure shows the ratio between each of the GNN-based cur
 \end{figure}
 
 The tracking efficiency varies as a function of truth pseudorapidity.
-All reconstruction algorithms reaches the maximum efficiency at $\abs{\eta}=3.0$ and $\eta=0$, and minimum at $\abs{\eta}=1.8$, symmetric around $\eta=0$
-The 
+All reconstruction algorithms reache the maximum efficiency at $\abs{\eta}=0$ and $\eta=3.0$, and minimum at $\abs{\eta}=1.8$, symmetric around $\eta=0$
+These variations are strongly correlated to the detector material encountered by the particle on its path, illustrated on figure \ref{subfig:rad-len-to-reco}. 
+The total radiation length traversed by a particle before reaching the minimum number of hits to be reconstructible is lowest at $\abs{\eta}=0$ and $\abs{\eta}=3.0$ 
+and peaks at $\abs{\eta}=1.5$. 
+Since material effects randomly direct the real trajectory away from an ideal helix, particles travelling through more material tend to have more hits deviating considerably from 
+their expected position. 
+For the CKF, this means that incorporating the correct hit could significantly increase the total $\chi^2$, leading to an early termination of the hit-finding sequence and 
+subsequently the track candidate failing the selection cuts.
+On the other hand, trained on data which contain these ``irregular'' connections, the GNN is observed to tolerate large deviations, but the constructed track candidate could
+still be ruled out by the global $\chi^2$ fit.
 
-Among the GNN-based trackers, the best efficiency is observed in the \textcolor{blue}{\textbf{Module Map MinMax}} variant, followed closely by the \textcolor{green}{\textbf{MeanRMS}} variant.
+Among the GNN-based trackers, the best efficiency is observed in the {{Module Map MinMax}} variant, followed closely by the {{MeanRMS}} variant.
 All three variants yield similar efficiency at low transverse momentum ($\pT<5$ GeV), but start to diverge at high \pT.
-The \textcolor{orange}{\textbf{Metric Learning}} is slightly less efficient for $\pT > 5$ GeV than the Module Map variants.
+The {{Metric Learning}} variant is slightly less efficient than the Module Map variants for $\pT > 5$ GeV.
 On the pseudorapidity spectrum, it has lower efficiency in the strip barrel in the range $\abs{\eta}<1$, but otherwise identical to the other GNN-based variants.
-Particles with a large transverse momentum are more likely to be concentrated in the central barrel, i.e. having small pseudorapidity. 
-Graph construction using the Metric Learning is less efficient than the Module Map at high \pT, as shown in figure \ref{subfig:filter-eff-eta}, which accumulates throughout the pipeline. 
-Consequently for the former method, the efficiency relatively degrades with increasing \pT, and, since large-\pT particles populates low $\abs{\eta}$, towards the central region.
+These observations are explain by the fact that high-\pT particles are more likely to have small pseudorapditiy and concentrate in the barrel region.
+% Particles with a large transverse momentum are more likely to be concentrated in the central barrel, i.e. having small pseudorapidity. 
+Graph construction using the Metric Learning is less efficient than the Module Map at high \pT, as shown in figure \ref{subfig:filter-eff-eta}, and the inefficiency accumulates throughout the pipeline,
+leading to the observed degradation in tracking efficiency. 
+% Consequently for the former method, the efficiency relatively degrades with increasing \pT, and, since large-\pT particles populates low $\abs{\eta}$, towards the central region.
 
 All variants of the GNN4ITk algorithm produce tracking efficiency exceeding that of the CKF when plotted as a function of $\eta$, in which each bin is the conditional efficiency averaged over all particle momenta. 
 On the \pT spectrum, however, it is clear that the improvement is not evenly distributed. 
@@ -530,9 +545,9 @@ Here we can clearly observe the correlation between the number of innermost pixe
 The transverse momentum resolution as a histogram is shown in figure \ref{subfig:res-pt-hist} and as a function of $\eta$ in figure \ref{subfig:res-pt-eta}.
 Unlike the other parameters' resolution, the dimensionless transverse momentum resolution is computed as $$
 \sigma(\pT) = p_{T,truth}  \times \left ( \frac{q}{p_{T, reco}} - \frac{q}{p_{T, truth}} \right).$$
-While other track parameters are directly obtained from the $\chi^2$ fit, the transverse momentum is a derived quantity in the ATLAS parametrization, as evidenced from equation \eqref{eq:track-performance:1}. 
+While other track parameters are directly obtained from the $\chi^2$ fit, the transverse momentum is derived from the total momentum $p$ and the azimuthal angle $\theta$ in the ATLAS parametrization (equation \eqref{eq:tracking-performance:1}). 
 There is no straightforward relationship between its resolution and elements of the global fit.
-However, given that it is derived from fit parameter $q/p$, which is influenced by material interaction, one expects degrading \pT resolution with more detector material encountered on the trajectory.
+However, given that it is derived from fit parameter $q/p$, whose uncertainty is driven by material interaction, one expects lower \pT resolution with more detector material encountered on the trajectory.
 This effect is observed on figure \ref{subfig:res-pt-eta},  viewed in tandem with figure \ref{subfig:itk-rad-len}, which shows the material budget traversed by a straight track in radiation length as a function of the particle's pseudorapidity.
 The total radiation length increases generally with $\eta$, so the closer to the beamline is the particle, the more its energy--and thus momentum--is eroded, weakening the constraints on \pT. 
 In consequence, the \pT resolution decreases monotonically with $\eta$.

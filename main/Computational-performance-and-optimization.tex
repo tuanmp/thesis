@@ -129,17 +129,21 @@ Interestingly, the performance boost delivered by the combined technique exceeds
 
 Similarly, the peak memory consumption is significantly improved with the combined optimization.
 Shown in figure \ref{tab:gnn-comp-improve}, the peak consumption on the A100 decreases from 19.16GB in the baseline to 6.48GB in the combined configuration, a factor of almost 3 smaller. 
-Thanks to the reduced memory footprint, it becomes possible to fit several events per batch and increase the inference throughput, a logical next step for future computational optimization. 
+Thanks to the reduced memory footprint, it becomes possible to simultaneously fit several events on the GPU and enhance the inference throughput, a logical next step for future computational optimization.
+This direction is being explore using a \textit{inference-as-a-service} approach, which optimizes the GPU utilization by batching multiple inference events and processing
+at the same time~\cite{zhao2025trackreconstructionservicecollider}. 
 
+\newpage
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.62\textwidth}
     \centering
         \includegraphics[width=\textwidth]{figures/rms_80g.png}
         \caption{}
         \label{subfig:gnn-time-node}
     \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}\centering
+
+    \begin{subfigure}[b]{0.62\textwidth}\centering
         \includegraphics[width=\textwidth]{figures/rms_80g_hist.png}
         \caption{}
         \label{subfig:gnn-time-hist}
@@ -148,12 +152,13 @@ Thanks to the reduced memory footprint, it becomes possible to fit several event
     \label{fig:gnn-time-node}
 \end{figure}
 
+
 \begin{table}[ht]
     \centering
     \begin{tabular}{|l|c|c|c|} \hline
-      {Optimization}   &  {A} & {B} & {C} \\ \hline 
+      {Computation}   &  {A} & {B} & {C} \\ \hline 
       \hline
-       Baseline  & 5.56 & $-8.73\times 10^{-1}$ & $1.30\times 10^{-1}$ \\
+       Eager  & 5.56 & $-8.73\times 10^{-1}$ & $1.30\times 10^{-1}$ \\
        AMP & 3.36 & $-5.40\times 10^{-1}$ & $8.87\times10^{-2}$ \\
        Compile & 1.73 & $-2.67\times 10^{-1}$  & $4.76\times 10^{-2}$ \\
        AMP + Compile & 0.457 & $-7.95\times 10^{-2}$ & $1.87\times 10^{-2}$ \\ \hline
@@ -161,10 +166,10 @@ Thanks to the reduced memory footprint, it becomes possible to fit several event
     \caption{The coefficients of a second-order polynomial fit to the GPU time shown in figure \ref{fig:gnn-time-node} for each optimization technique. The GPU time $t$ in units of seconds is assumed to depend on $x=\frac{\abs{V}}{10^6}$, where $V$ is the set of nodes, as $t=Ax^2+Bx+C$.}
     \label{tab:gnn-time-node-fit}
 \end{table}
-% [put a histogram]
+% \newpage
 The event-level GPU run time as a function of the event size measured in the number of space points (graph nodes) along its best-fit second-order polynomial is shown in figure \ref{subfig:gnn-time-node}, and the fitted coefficients in table \ref{tab:gnn-time-node-fit}.
 The majority of events contain 250,000 to 425,000 nodes, and their GPU time exhibits a well-defined scaling behaviour with respect to the number of space points in the event.
-The dependence on space point number of GPU time is strongly quadratic, with a small linear component. 
+The dependence on space point number of GPU time scales quadratically, with a small linear component. 
 Events far from the distribution core are well-described by the fitted curve, and no significant outliers are observed. 
 The scaling behaviour is significantly improved with each optimization technique. 
 In comparison to that of eager execution, the execution time of the combined AMP and Compilation execution scales much slower with event size, which is approximately proportional to true pile-up. 
@@ -172,7 +177,7 @@ This is evident, given the second-order coefficient of obtained from the latter 
 The execution time of the optimized code is thus not only small but also stays small over the typical range of pile-up.
 
 The latency reduction from these computational optimizations is also evident from both the mean and spread of the GPU time distribution observed in each scenario, demonstrated in figure \ref{subfig:gnn-time-hist}.
-In the combined optimization, the distribution averages to $42\pm 9$ ms, with a range of 103 ms, while in the eager baseline, the distribution centres at $443\pm117$ ms, with a range of 1231 ms. 
+In the combined optimization, the distribution averages to $42\pm 9$ ms, with a range of 103 ms, while in the eager baseline, the distribution centers at $443\pm117$ ms, with a range of 1231 ms. 
 The former only only peaks at a lower latency, it is also much narrower than the latter.
 This weak scaling makes the computation less susceptible to large events outside the core distribution, as shown in figure \ref{subfig:gnn-time-node} above $\abs{V}=4.5\times 10^5$.
 
@@ -208,10 +213,13 @@ As of writing, a CUDA-based version of the Walkthrough is under development, pro
     \label{tab:pipeline-comp-perf}
 \end{table}
 Of the two graph construction approaches, Module Map is significantly faster than Metric Learning.
-The latter's inference time is the sum of the metric learning and filter steps, both of which, as of writing, have not been optimized.
-On the other hand, the former is accelerated by a custom CUDA-kernel which maximally parallelizes all steps of the graph creation on the GPU.
+The former is carried out by a custom CUDA-kernel which maximally parallelizes all steps of the graph creation on the GPU, most notably the \textsc{Merge/Join} operations of data frames,
+which consume considerable computation on the CPU but are greatly accelerated on the GPU~\cite{cudf}.
+On the other hand, the latter's graph construction latency is the sum of the metric learning and filter steps, both of which, as of writing, have not been optimized.
+The metric learning step suffers from a lengthy kNN search in high a 12-dimensional space, and the filter step operates on large graphs of $\abs{V}\sim 6\times 10^6$ edges. 
+These shortcomings are however optimizable, and methods to address them are being investigated. 
 In the edge classification step, both graph construction approaches demonstrate similar speed, ranging from 42 to 53 ms/event.
-Their relative latency is evident from the average graph size, with $\abs{V}_{\mathrm{MinMax}} > \abs{V}_{\mathrm{ML}} > \abs{V}_{\mathrm{MeanRMS}}$, and correspondingly $t_{\mathrm{MinMax}} > t_{\mathrm{ML}} > t_{\mathrm{MeanRMS}}$.
+Their difference in latency is evident from the average graph size, with $\abs{E}_{\mathrm{MinMax}} > \abs{E}_{\mathrm{ML}} > \abs{E}_{\mathrm{MeanRMS}}$, and correspondingly $t_{\mathrm{MinMax}} > t_{\mathrm{ML}} > t_{\mathrm{MeanRMS}}$, where $E$ is the edge set and $t$ the latency.
 In the graph segmentation step, after fake edges are removed by a loose GNN score cut, the remaining graphs have similar edge set among the three variants, and their track building time is largely in accordance.
 
 % Unlike the case of the tracking performance, it is not straightforward to compare the CKF- and GNN-based track finders in terms of the computing performance.
