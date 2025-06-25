@@ -275,30 +275,32 @@ Finally, a set of randomly sampled edges $E_{random}$ is added to stabilise the 
     \begin{tabular}{l|l}
     \hline
      Hit input    &  Description\\
-     \hline
+     \hline \hline
       $r$   & Global transverse radius of space point \\
       $\phi$ & Global azimuthal angle of space point\\
-      $z$ & Global $z$-coordinate of space point\\
+      $z$ & Global $z$-coordinate of space point\\ \hline
       $x_{CL, i}$ & Global $x$-coordinate of cluster $i$ \\
       $y_{CL, i}$ & Global $y$-coordinate of cluster $i$ \\
       $z_{CL, i}$ & Global $z$-coordinate of cluster $i$ \\
-      count & Number of pixels cells contained in a cluster \\
-      charge count & Charge deposit on a pixel cluster \\
-      $\eta_{CL,loc,i}$ & Module $\eta$ in local coordinate system \\
-      $\phi_{CL,loc,i}$ & Module $\phi$ in local coordinate system \\
-      $\eta_{CL,glob,i}$ & Module $\eta$ in global coordinate system \\
-      $\phi_{CL,glob,i}$ & Module $\phi$ in global coordinate system \\
-      eta-angle & hit $\eta$ angle \\
-      phi-angle & hit $\phi$ angle \\
-      $l_x$ (LocalDirx) & Cluster shape $x$\\
-      $l_y$ (LocalDiry)& Cluster shape $y$\\
-      $l_z$ (LocalDirz)& Cluster shape $z$\\
-      LengthDirx & LengthDirx \\
-      LengthDiry & LengthDiry \\
-      LengthDirz & LengthDirz \\
+      $n_{cell}$ & Number of pixels cells contained in a cluster \\
+      $q_{tot}$ & Total charge deposit on a pixel cluster, 0 for strip \\
+      $\eta_{shape,loc,i}$ & Cluster shape $\eta$ in local coordinate system \\
+      $\phi_{shape,loc,i}$ & Cluster shape $\phi$ in local coordinate system \\
+      $x_{shape,loc,i}$ & Cluster shape $x$ in local coordinate system \\
+      $y_{shape,loc,i}$ & Cluster shape $y$ in local coordinate system \\
+      $z_{shape,loc,i}$ & Cluster shape $z$ in local coordinate system \\
+      $\eta_{shape,glob,i}$ & Cluster shape $\eta$ in global coordinate system \\
+      $\phi_{shape,glob,i}$ & Cluster shape $\phi$ in global coordinate system \\
+      $\theta_{shape,glob\to loc, i}$ & $\theta$ angle of the global cluster shape projected on local coordinate system \\
+      $\phi_{shape,glob\to loc, i}$ & $\phi$ angle of the global cluster shape projected on local coordinate system \\
       \hline
     \end{tabular}
-    \caption{Input features into the Metric Learning model. See Appendix \ref{appendix:hit-training-var} for definitions of the variables.}
+    \caption{Input features into the Metric Learning model include the global coordinates of the reconstructed space point $(r, \phi, z)$
+     and features describing the number of cells, the total charge deposit in the clusters from which the space point is reconstructed.
+     A pixel space point is formed from a single cluster, and a strip space point from two clusters. 
+     The subscript $i\in \{1,2\}$ of the cluster features denote the cluster index.
+     The cluster shape is a vector pointing from the cell where the particle enters the detector element to one where it exits.
+     To preserve the same input vector shape, pixel cluster features of are duplicated at each node. }
     \label{tab:input-metric-learning}
 \end{table}
 

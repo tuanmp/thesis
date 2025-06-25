@@ -281,10 +281,11 @@ This mission is reserved for a larger, more sophisticated \ignn introduced in th
       \hline \hline
         Module Map {\textsc{MinMax}} & 99.69 & & $1.22\times 10^6$ \\
         Module Map {\textsc{MeanRMS}} & 99.51  & & $8.55\times 10^5$ \\
-        Metric Learning + Filter & 99.55  & 1.48 & $9.76\times 10^5$\\
+        Metric Learning + Filter & 99.53  & 1.48 & $9.76\times 10^5$\\
         \hline
     \end{tabular}
-    \caption{Comparison of graphs entering the \ignn}
+    \caption{Comparison of the three graph construction methods: Module Map \textsc{MinMax}, Module Map \textsc{MeanRMS} and Metric Learning. 
+    The constructed graphs become input to the \ignn.}
     \label{tab:graph-contruction-comparison}
 \end{table}
 
@@ -330,7 +331,7 @@ The custom edge features, listed in table \ref{tab:gnn-edge-features}, resemble 
      $\phi$-slope & $\frac{\Delta\phi_{ij}}{\Delta r_{ij}}$ \\ \hline
      $r\phi$-slope & $\frac{r_i+r_j}{2}\times \frac{\Delta\phi_{ij}}{\Delta r_{ij}}$ \\ \hline \hline
     \end{tabular}
-    \caption{Hand-engineered edge features}
+    \caption{Edge-level input features to the \ignn. The subscripts $i$ and $j$ respectively denote the source and destination nodes connected by an edge.}
     \label{tab:gnn-edge-features}
 \end{table}
 
@@ -435,7 +436,7 @@ The model weights are optimized on the edge classification objective, using the 
        Epochs & $\approx 200$ \\
     \hline
     \end{tabular}
-    \caption{\ignn~model specification}
+    \caption{Hyperparameters used to train the \ignn.}
     \label{tab:ignn-specification}
 \end{table}
 
@@ -550,21 +551,32 @@ Nevertheless, the residual impurity creates challenges to the construction of tr
       \hline \hline
         Module Map \textbf{\textsc{MinMax}} & 99.40 & 95.64 & $2.53\times 10^4$ \\
         Module Map \textbf{\textsc{MeanRMS}} & 99.04  & 95.34 & $2.48\times 10^4$ \\
-        Metric Learning + Filter & 99.55  & & $9.76\times 10^5$\\
+        Metric Learning + Filter & 97.98  & 97.86 & $2.54\times 10^4$\\
         \hline
     \end{tabular}
-    \caption{Performance of the \ignn~across three graph construction methods. }
+    \caption{Performance of the GNN4ITk algorithm after the across three graph construction methods. Edges are classified using the \ignn~with a threshold of 0.5 on the classification 
+    score. The edge efficiency is cumulative throughout the pipeline. The number of edges is the size of the remaining edge set after the score cut.}
     \label{tab:edge-classification-comparison}
 \end{table}
 
-A comparison in performance of the three GNN4ITk variants is provided in table \ref{tab:edge-classification-comparison}.
-The {Module Map MinMax} variant displays the best performance in both efficiency and purity, followed by the MeanRMS and the Metric Learning variants.
+The performance of the GNN4ITk algorithm through both graph construction and edge classification steps is shown in table \ref{tab:edge-classification-comparison}, including 
+the cumulative efficiency, purity and the graph size after rejecting edges with $s<0.5$.
+Three variants corresponding to three graph construction methods are contrasted.
+On graph constructed by the Module Map techniques, the performance of the GNN is almost identical between the \textsc{MinMax} and \textsc{MeanRMS} variants, with the 
+former having slightly better efficiency and purity.
+The Metric Learning variant is $~1.4\%$ less efficient than the MinMax variant, but $~3\%$ more pure.
+The number of remaining edges after the score cut is similar throughout the graph construction methods and is significantly smaller than that of the 
+input graphs. 
 % Although these edge-based metrics are useful in evaluating and optimizing machine learning models, 
-The edge-based efficiency and purity are useful in developing machine learning models. 
-However, in production settings, the performance must be evaluated using Athena \cite{atlas_collaboration_2021_4772550}, the main software analysis framework of ATLAS.
+
+The edge-based metrics are useful in evaluating machine learning models, and a simple score cut is typically sufficient in many applications. 
+However, in order to build track candidates, the scored graphs are subjected to a segmentation stage, which 
+treats the edge score in a procedure more sophisticated than a simple cut.
+In addition, the resulting track candidiates must fed into Athena \cite{atlas_collaboration_2021_4772550}, the main software analysis framework of ATLAS, 
+so that they are properly processed and become input into subsequent steps of the event reconstruction chain.
 % However, these edge-based metrics are useful to evaluate and optimize model design, but to assess the algorithm in production settings, the tracking and computing performance are more relevant in the larger context of ATLAS event reconstruction.
 
-As such, the next step of the GNN4ITk pipeline partitions a graphs whose edges have been scored by the GNN into track candidates, which are then fed into Athena. 
+As such, the next step of the GNN4ITk algorithm partitions a graph whose edges have been scored by the GNN into track candidates. 
 Track parameters are estimated and other important metrics are computed in a unified framework for both the CKF- and the GNN-based track finders.
 The graph segmentation step is presented in the next chapter, and the tracking performance in chapter \ref{chap:tracking-performance}.
 
