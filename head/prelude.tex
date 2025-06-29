@@ -1,0 +1,158 @@
+% prelude.tex
+%   - titlepage
+%   - dedication
+%   - acknowledgments
+%   - table of contents, list of tables and list of figures
+%   - nomenclature
+%   - abstract
+%============================================================================
+
+
+% \clearpage\pagenumbering{roman}  % This makes the page numbers Roman (i, ii, etc)
+
+
+
+% TITLE PAGE
+%   - define \title{} \author{} \date{}
+\title{Search for Dark Matter with the ATLAS Detector and Development of a Track Reconstruction Algorithm for the ATLAS Inner Tracker}
+
+\author{Minh-Tuan Pham}
+\advisorname{Sau Lan Wu}
+\advisortitle{Professor}
+\department{Physics}
+\oralexamdate{07/25/2025}
+\committeeone{Sau Lan Wu, Professor, Physics}
+\committeetwo{Sridhara Dasu, Professor, Physics}
+\committeethree{Paolo Calafiura, Doctor, Physics}
+\committeefour{Melinda Soares-Futardo, Professor, Astronomy}
+% \committeefive{XXX, Professor, Physics}
+
+\date{2025}
+%   - The default degree is ``Doctor of Philosophy''
+%     (unless the document style msthesis is specified
+%      and then the default degree is ``Master of Science'')
+%     Degree can be changed using the command \degree{}
+%   - The default is dissertation, unless the document style
+%     msthesis was specified in which case it becomes thesis.
+%     If msthesis is specified for the MS margins, you can
+%     still have a dissertation if you specify \disseration
+%\disseration
+%   - for a masters project report, specify \project
+%\project
+%   - for a preliminary report, specify \prelim
+%\prelim
+%   - for a masters thesis, specify \thesis
+%\thesis
+%   - The default department is ``Electrical Engineering''
+%     The department can be changed using the command \department{}
+%\department{New Department}
+%   - once the above are defined, use \maketitle to generate the titlepage
+% \newgeometry{left=1in,right=1in,bottom=1in,top=1in}
+\maketitle
+%% \newgeometry{left=1.2in,right=1in,bottom=1in,top=1in}
+
+%% \restoregeometry %sets the margins back to normal
+
+% COPYRIGHT PAGE
+%   - To include a copyright page use \copyrightpage
+% \copyrightpage
+
+% DEDICATION
+% \begin{dedication}
+% %% \begin{CJK*}{UTF8}{gbsn}
+% \textit{To my family.}
+% %% \end{CJK*}
+% \end{dedication}
+
+% ACKNOWLEDGMENTS
+% \begin{acknowledgments}
+% First and foremost, I would like to express my deepest gratitude to my advisor Professor Sau Lan Wu.
+% Sau Lan's guidance and support have been instrumental in my success throughout my PhD.
+% I am grateful to have joined her research group and had the opportunity to work on experiments such as the \Hmm, \monoHbb, Higgs combination, \thdma\ combination and ITk upgrade.
+% Sau Lan's mentorship and leadership have enabled me to make important contributions to these projects and stand out in the analysis teams.
+% In addition, she connected me to the Lawrence Berkeley National Lab, where I had an amazing experience towards the end of my PhD.
+% Sau Lan is a great mentor who truly cares about students' lives and careers. She not only taught me how to become a great physicist but also inspired me to become a hard-working and self-motivated person.
+
+% I am grateful to the Department of Physics at the University of Wisconsin-Madison for providing me with the opportunity to pursue my graduate studies.
+% I would also like to acknowledge my thesis defense committee members, including my advisor Sau Lan Wu, and Kevin Black, Tulika Bose, and Snezana Stanimirovic, for reading my thesis and providing valuable feedback.
+% Their comments and suggestions helped me to improve the quality of my work and make it a more comprehensive and coherent piece of scientific writing.
+
+% The Wisconsin ATLAS group is like a big family.
+% I am grateful to Chen Zhou for instructing me and giving me advice for all aspects of my research projects, including \Hmm, \monoHbb, Higgs combination, \thdma\ combination, and my ATLAS qualification task on ITk simulation.
+% Chen also helped me with all my presentations, funding proposals and even job applications.
+% He has been super helpful throughout my PhD. I cannot be more grateful for the everyday help and support from Sylvie Padlewski as well.
+% I also enjoyed the active discussions and company from Alex Wang, Rui Zhang, Alkaid Cheng, Tuan Pham, Wasikul Islam and Amy Tee.
+% Furthermore, the technical support from Shaojun Sun and Wen Guan has been incredible.
+
+% I would like to thank my ATLAS analysis collaborators, including Giacomo Artoni, Jan Kretzschmar, Fabio Cerutti, Hongtao Tang, Andrea Gabrielli, Gaetano Barone, Miha Zgubic, Yanlin Liu, Miha Muskinja, Alice Alfonsi, Brendon Bullard, and Hanna Borecka-Bielska in \Hmm, Spyridon Argyropoulos, Dan Guest, James Frost, Philipp Gadow, Andrea Matic, Anindya Ghosh, Eleni Skorda, Jon Burr, and Samuel Meehan in \monoHbb, Zirui Wang and Lailin Xu in the \thdma\ combination, Nicolas Morange, Kunlin Ran and Rahul Balasubramanian in the Higgs combination, and Ben Smart and Chen Zhou for supervising my ATLAS qualification task. It was a pleasure working with all these incredible people, and I learned a lot from each individual.
+
+% I also want to acknowledge my fellow PhD students Manuel Silva and Maria Veronica Prado for all the joyful activities in Wisconsin and Switzerland. While I was at CERN, I had lots of fun hanging out with Yaun-Tang Chou, Otto Lau, Yvonne Ng, and Bobby Tse.
+
+% The days I was based at Berkeley are among the happiest in my life. I would like to express my sincere appreciation to Maurice Garcia-Sciveres and Kevin Einsweiler for providing me the opportunity to work on the ITk pixel upgrade and to Elisabetta Pianori and Timon Heim for giving me day-to-day training and guidance.
+% I am also extremely grateful to have had the opportunity to work with Ben Nachman on the Machine Learning projects.
+% Ben taught me a lot about Machine Learning, and his innovative ideas continue to inspire and motivate me.
+% I also appreciate the support and company from other lab members, including Aleksandra Dimitrievska, Marija Marjanovic, Daniel Joseph Antrim, Hongtao Yang, Xiangyang Ju, Taisai Kumakura, Haoran Zhao, Miha Muskinja, Karol Krizka, Elodie Resseguie, Juerg Beringer, Marko Stamenkovic, Rebecca Carney, Zhicai Zhang, Mariel Pettee, Shuo Han, Emily Anne Thompson, Elham E Khoda, Ian Dyckes, Maria Giovanna Foti, Carl Haber, Elliot Reynolds, Vinicius Mikuni, Alessandra Ciocio, and Angira Rastogi.
+
+% I would also like to thank my mom Li-Chin Huang and my partner Gabriel Alcaraz for their love and support.
+% % I would also like to thank my mom Li-Chin Huang and my dad Rong-Hui Chan for their love and support.
+% Their unwavering encouragement and belief in me have been crucial to my success. I am grateful for their presence in my life and their unwavering support throughout my PhD journey.
+
+% Finally, I want to express my heartfelt appreciation to all my friends who have been a part of my life in Wisconsin, Switzerland, and Berkeley. I am grateful for the joy and laughter that they brought into my life, and their unwavering support and encouragement have been invaluable to me.
+  
+
+
+
+
+
+
+
+% Prof. Wu is a great mentor who truly cares about students’ education and welfare. She taught me how to become a good physicist and helped me countless times. Her dedication, perseverance and vision have inspired me in both research and life over the past six years, and will continue inspiring me in the future.
+
+% The days I was based at University of Wisconsin-Madison are among the happiest in my life. I was very fortunate to take courses from the outstanding Wisconsin professors, including Prof. Baha Balantekin, Prof. Ludwig Bruch, Prof. Daniel Chung, Prof. Lisa Everett, Prof. Karsten Heeger and many others. They have equipped me with the knowledge needed for future re- search, for which I really owe great thanks to them. I would like to also thank Prof. Lisa Everett, Prof. Gary Shiu, Prof. Wesley Smith and Prof. Michael Winokur for kindly reading this thesis and providing very helpful feedback.
+
+% The Wisconsin ATLAS group is like a big family. I would like to express my sincere apprecia-
+% tions to my colleagues, in particular to those who have shared with me selflessly their knowledge
+% and experience in research. I thank German Carrillo-Montoya for teaching me physics analysis
+% basics and supervising me on the H → ZZ → llνν and H → ZZ → llqq analyses. I also thank
+% Swagato Banerjee for helping me on the Emiss trigger project. Since 2012 Haichen Wang had been T
+% training me on H → γγ analyses and guiding me in many other aspects until and even after he graduated, for which I am really grateful. I am also indebted to Haoshuang Ji for the valuable training on statistical combination. At different stages of my PhD program, I have worked closely with Andrew Hard, Xiangyang Ju, Laser Kaplan, Lashkar Kashif, Manuel Silva, Fuquan Wang, Fangzhou Zhang and Chen Zhou on various topics. I value the pleasant time working with them, and I thank them for all the support and understanding they gave. In addition, I would like to thank Werner Wiedenmann for being such a nice office mate who shared knowledge and stories with me.
+% ii
+% And I thank Neng Xu, Wen Guan and Shaojun Sun for their support on computing. My thanks also go to Luis Roberto Flores Castillo, Yaquan Fang, Haifeng Li, LianLiang Ma, Yao Ming, Haiping Peng, Ximo Poveda, Bill Quayle, Tapas Sarangi and Haimo Zobernig for their friendship and help.
+% As a member of the ATLAS Collaboration, I enjoy the privilege of working with outstanding physicists from all over the world. I thank Konstantinos Nikolopoulos for the joyful days working in the HSG2 (now HZZ) working group in 2011. I also thank Junichi Tanaka for being a great HSG1 (now HGam) convener during the Higgs boson discovery time. The follow-up HSG1 con- veners, including Kerstin Tackmann, Krisztian Peters, Nicolas Berger, Sandrine Laplace, Dag Gill- berg, Elisabeth Petit, Bruno Lenzi and Marco Delmastro have generously provided their guidance and support to me on various topics, which I really appreciate. I also thank many nice colleagues in the HSG1 working group for discussions that help me improve.
+% I am grateful to Paul Tipton and his Yale team, including Jahred Adelman, Johannes Erdmann, Andrey Longinov and Jared Vasquez for the very fruitful and pleasant collaboration on the search
+%  ̄
+% I thank Eilam Gross for his guidance and support from Higgs boson search time all the way to the LHC Higgs combination. My thanks also go to my colleagues in the LHC Higgs Com- bination Group, in particular to Tim Adye, Andrea Gabrielli, Stefan Gadatsch, Rei Tanaka and Guillaume Unal from ATLAS, and to Mingshui Chen, Andre ́ David, Giovanni Petrucciani and Marco Pieri from CMS. Moreover, I would like to thank the ATLAS editorial board chaired by Kevin Einsweiler for ensuring the quality of the publication with admirable amount of effort. In the HSG7 (now HComb) working group I thank Fabio Cerutti, Michael Duehrssen-Debling, Bruno Mansoulie, Kirill Prokofiev and Wouter Verkerke for their coordination and guidance, and I thank many outstanding colleagues I have worked with on this forum from different areas.
+% I thank Aurelio Juste for inviting me to the combined search for flavor-changing neutral current t → Hq decay. I thank Enrique Kajomovitz, Mike Hance, Alex Martyniuk, Bill Murray, Attilio Picazio, Reina Camacho Toro and other colleagues in the DBL working group for the collaboration on high mass diboson resonance search in all-hadronic channel and in combination with other diboson decay channels.
+% for ttH production process in the diphoton decay channel. On the same topic I am thankful for the strong support from HSG8 (now HTop) conveners Aurelio Juste and Peter Onyisi, and also from our editorial board chaired by Stathes Paganis.
+% iii
+
+% In the Run 2 high mass diphoton resonance search effort I give my special thanks to Tan- credi Carli, Leonardo Carminati and Marco Delmastro for their organization and support, and to our editorial board chaired by Karl Jacobs and later also by Fabio Cerutti for their dedication. I also want to thank Liron Barak, Nicolas Berger, Quentin Buat, Marcello Fanti, Kirill Grevtsov, Giovanni Marchiori, Simone Mazza, Thomas Meideck, Lydia Roos, Jan Stark, Ruggero Turra, Guillaume Unal, Yee Chinn Yap and other colleagues in the analysis team who have helped me.
+% I would like to thank Marumi Kado for kindly following the analyses I have worked on as first Higgs Convener and later ATLAS Physics Coordinator, and providing very helpful inputs.
+% Besides colleagues working on physics analyses, I am deeply grateful to Maurice Garcia-
+% Sciveres and also Ian Hinchliffe for arranging me to visit LBNL and work with Maurice on the
+% exciting Pixel Detector Phase 2 upgrade project. During my stay at LBNL I sincerely appreciate
+% the help from Rebecca Carney, Niklaus Lehmann, Manuel Silva, Simon Viel and other nice Berke-
+% ley colleagues. I also want to thank Allen Mincer and colleagues in the Emiss signature group for T
+% their patient instructions on my Emiss trigger project. T
+% My research cannot go smoothly without the excellent administrative support, so I would like to thank Rita Knox, Aimee Lefkow, Renne Lefkow and Sylvie Padlewski for all their kind help. I should give additional thanks to Sylvie for taking care of me in France.
+% Finally, I would like to thank my parents, my grandparents and my girlfriend Nan Lu. Their love gives me the momentum to continue pursuing science while being able to appreciate all the other wonderful things in life. This thesis is dedicated to them.
+
+
+% \end{acknowledgments}
+
+% CONTENTS, TABLES, FIGURES
+% \tableofcontents
+% \listoftables
+% \listoffigures
+
+% ABSTRACT
+% \begin{umiabstract}
+%   \input{input/abstract}
+% \end{umiabstract}
+
+% \begin{abstract}
+%   \input{input/abstract}
+% \end{abstract}
+
+
+% \clearpage\pagenumbering{arabic} % This makes the page numbers Arabic (1, 2, etc)

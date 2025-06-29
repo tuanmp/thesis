@@ -14,3 +14,4 @@
 *.lof
 *.DS_Store
 *-ERROR
+*synctex*

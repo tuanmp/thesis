@@ -12,12 +12,14 @@ The GNN ``looks at" all possible candidate tracks in an event at the same time, 
 The shift from hit finding to connection finding necessitates a change in representation of the collision event from a point cloud to a collection of nodes and edges, the very definition of a \textbf{graph}. 
 This approach therefore relies on graph data structure.
 
-The work documented in this thesis builds upon that of reference \cite{exatrkx}, which examined the physics and computing performance of the GNN on the TrackML dataset~\cite{trackml-particle-identification}, and of reference \cite{Caillou:ATL-ITK-PROC-2022-006}, which made initial strides in applying the GNN to data from full ITk simulation. 
+The work documented in this thesis builds upon that of reference \cite{exatrkx}, which examined the physics and computing performance 
+of the GNN on the TrackML dataset~\cite{trackml-particle-identification}, and of reference \cite{Caillou:ATL-ITK-PROC-2022-006}, 
+which made initial strides in applying the GNN to data from full detector simulation using ITk geometry. 
 It contributes numerous developments that bring the new approach closer to the state-of-the-art performance.
 Neural network architectures undergo significant refinements.
-The algorithm is fully integrated into the official ATLAS analysis software framework~\cite{atlas_collaboration_2021_4772550}, thus enabling direct performance comparison to the CKF.
+The algorithm is fully integrated into the official ATLAS software framework~\cite{atlas_collaboration_2021_4772550}, thus enabling direct performance comparison to the CKF.
 Finally, many components are computationally optimized, resulting in competitive reconstruction speed.
-This chapter commence the discussion with an overview of the algorithm and the construction of graphs from detector data. 
+This chapter commences the discussion with an overview of the algorithm and the construction of graphs from detector data. 
 Subsequent stages of the algorithm, especially the graph neural network, are detailed in chapters \ref{chap:gnn} and \ref{chap:track-building}, and finally the results are presented in chapters \ref{chap:tracking-performance} and \ref{chap:computing-performace}.
 % In the previous chapter, we propose a global approach to the problem of track finding in the ITk as an alternative to the existing local approach of the Combinatorial Kalman Filter. 
 
@@ -48,7 +50,7 @@ Edges with scores under the threshold are eliminated, and the remaining graph is
 
 \section{Target, non-target particles and evaluation metrics}
 \label{sect:eval-metrics}
-At $\epu=200$, each collision event produces $\expval{N}\approx 10000$ particles, the majority of which are of little interest to the physics program in ATLAS. 
+At $\epu=200$, each collision event produces $\expval{N}\approx 10000$ final-state stable particles, the majority of which are of little interest to the physics program in ATLAS. 
 They include, for example, low-momentum particles from background processes or particles which leave too few hits to be considered reconstructible.
 The remaining particles can be broadly categorized by the interaction from which they emerge. 
 Primary particles are produced in the luminous area directly from proton-proton interaction and stable enough to traverse the detector, including protons, electrons, muons, pions, etc.
@@ -56,8 +58,8 @@ Secondary particles arise from the interaction of primary particles with detecto
 As these interactions destroy information on the primary particle's kinematics, the CKF chain does not target secondary particles for reconstruction.
 In the same spirit, throughout the GNN4ITk chain, we identify these particles prior to model training and exclude them from the loss function, as well as performance evaluation.
 
-Since a secondary interactions occurs when the primary particle has travelled a distance from the luminous region, their vertices are considerably further from the origin than the primary counterpart. 
-Shown on figure \ref{fig:vertex-spectrum}, the majority of primary vertex positions are located at $v_r < 20$ cm and $v_z < 20$ cm, in contrast to secondary vertices, whose distributions of $v_r$ and $v_z$ are more spread-out and with longer tails.
+Since a secondary interaction occurs when the primary particle has travelled a distance from the luminous region, their vertices are considerably further from the origin than the primary counterpart. 
+Shown on figure \ref{fig:vertex-spectrum}, the majority of primary vertex positions are located at $v_r < 20$ mm and $v_z < 20$ cm, in contrast to secondary vertices, whose distributions of $v_r$ and $v_z$ are more spread-out and with longer tails.
 % for secondary particles than their primary counterpart, which terminates at $v_r<10$ cm and $\abs{v_z}< 20$ cm, see figure \ref{subfig:radius-spectrum}.
 This distinction allows us to select primary particles in training by requiring the production vertex to be within 26 cm from the origin.
 As we will see in chapter \ref{chap:tracking-performance}, the ATLAS reconstruction chain eliminates secondary particle tracks by applying selection cuts on the impact parameters, which are good estimates of the vertex point, of $\abs{z_0}\le 20$ cm and $\abs{d_0}\le10$ cm. 

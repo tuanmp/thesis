@@ -2,8 +2,10 @@
 \documentclass[12pt]{withesis}
 \usepackage{physics}
 \usepackage{amsmath}
+\usepackage[dvipsnames]{xcolor}
 % \usepackage{unicode-math}
 % \usepackage{amsthm}
+% \usepackage{setspace}
 \usepackage[font=small,labelfont=bf]{caption}
 % \captionsetup[figure]{font=small,labelfont=small}
 % \captionsetup[table]{font=small,labelfont=small}
@@ -30,8 +32,8 @@
 \definecolor{darkblue}{RGB}{53,76,170}
 \usetikzlibrary{quotes}
 \usetikzlibrary{shapes,decorations,arrows,calc,arrows.meta,positioning,fit,arrows,shapes.geometric,shapes.multipart,decorations.pathmorphing}
-\usepackage[dvipsnames]{xcolor}
-\usetikzlibrary{decorations.markings, fadings,through}
+
+ \usetikzlibrary{decorations.markings, fadings, through}
 \usepackage{lineno}
 \linenumbers
 
@@ -60,7 +62,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 % \frontmatter
-\include{head/titlepage}
+\include{head/prelude}
 % \include{head/dedication}
 \setcounter{page}{0}
 % \include{head/acknowledgements}
@@ -94,7 +96,7 @@
 \include{main/The-ATLAS-experiment}
 \include{main/A-physics-analysis}
 
-\part{Track reconstruction with geometric deep learning in the ATLAS ITk}
+\part{Track reconstruction with geometric deep learning using graph neural networks in the ATLAS Inner Tracker}
 \include{main/The-HL-LHC}
 \include{main/itk}
 \include{main/The-CKF}
