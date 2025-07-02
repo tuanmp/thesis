@@ -6,9 +6,12 @@
 Graph Neural Networks (GNNs) were first proposed in 2018 as an alternative track finder to the Combinatorial Kalman Filter (CKF)~\cite{farrell2018noveldeeplearningmethods}.
 Developed and tested on the \textsc{TrackML} dataset \cite{trackml-particle-identification}, they demonstrated excellent physics performance and favourable scaling behaviour~\cite{exatrkx, choma2020trackseedinglabellingembeddedspace}.
 Fundamentally, GNN-based algorithms represent a shift from the local track finding approach of the CKF to a global approach.
-Instead of sequentially extending a tracklet\footnote{An incomplete track} with compatible hits on its path, as described in chapter \ref{chap:atlas-reco-chain}, global track finding considers simultaneously all connections between detector hits and finds those that are most likely to belong to true particle tracks.
-No longer is a need to loop through a set of redundant track seeds, which makes the CKF slow and requires a costly ambiguity resolution.
-The GNN ``looks at" all possible candidate tracks in an event at the same time, significantly accelerating the recognition of track patterns thanks to GPU-powered parallelization.
+Instead of extending a track seed with compatible hits in sequence, as described in chapter \ref{chap:atlas-reco-chain}, 
+global track finding considers simultaneously a set of connections between detector hits and finds those that are most likely to belong to true particle tracks.
+This set should contain most of the true connections and can be quite large, but the ability to parallelize the computation on GPUs makes this approach an attractive 
+alternative to the sequential mechanism and redundancy of the CKF.
+% No longer is a need to loop through a set of redundant track seeds, which makes the CKF slow and requires a costly ambiguity resolution.
+% The GNN ``looks at" all possible candidate tracks in an event at the same time, significantly accelerating the recognition of track patterns thanks to GPU-powered parallelization.
 The shift from hit finding to connection finding necessitates a change in representation of the collision event from a point cloud to a collection of nodes and edges, the very definition of a \textbf{graph}. 
 This approach therefore relies on graph data structure.
 
@@ -53,13 +56,14 @@ Edges with scores under the threshold are eliminated, and the remaining graph is
 At $\epu=200$, each collision event produces $\expval{N}\approx 10000$ final-state stable particles, the majority of which are of little interest to the physics program in ATLAS. 
 They include, for example, low-momentum particles from background processes or particles which leave too few hits to be considered reconstructible.
 The remaining particles can be broadly categorized by the interaction from which they emerge. 
-Primary particles are produced in the luminous area directly from proton-proton interaction and stable enough to traverse the detector, including protons, electrons, muons, pions, etc.
-Secondary particles arise from the interaction of primary particles with detector material, such as $\delta$-ray electrons and nuclear interaction products. 
-As these interactions destroy information on the primary particle's kinematics, the CKF chain does not target secondary particles for reconstruction.
+Primary particles are produced in the luminous area directly from proton-proton interactions. 
+Only particles that are stable enough to traverse the detector, including protons, electrons, muons, pions, etc can be reconstructed.
+Secondary particles arise from the interaction of stable primary particles with detector material, such as $\delta$-ray electrons and nuclear interaction products. 
+The CKF chain does not target secondary particles for reconstruction, due to the high computational cost to simultaneously consider them.
 In the same spirit, throughout the GNN4ITk chain, we identify these particles prior to model training and exclude them from the loss function, as well as performance evaluation.
 
-Since a secondary interaction occurs when the primary particle has travelled a distance from the luminous region, their vertices are considerably further from the origin than the primary counterpart. 
-Shown on figure \ref{fig:vertex-spectrum}, the majority of primary vertex positions are located at $v_r < 20$ mm and $v_z < 20$ cm, in contrast to secondary vertices, whose distributions of $v_r$ and $v_z$ are more spread-out and with longer tails.
+Since a secondary interaction occurs when the primary particle has travelled a distance from the luminous region, their vertices are often considerably further from the origin than the primary counterpart. 
+Shown on figure \ref{fig:vertex-spectrum}, the majority of primary vertex positions are located at $v_r < 2$ cm and $v_z < 20$ cm, in contrast to secondary vertices, whose distributions of $v_r$ and $v_z$ are more spread-out and with longer tails.
 % for secondary particles than their primary counterpart, which terminates at $v_r<10$ cm and $\abs{v_z}< 20$ cm, see figure \ref{subfig:radius-spectrum}.
 This distinction allows us to select primary particles in training by requiring the production vertex to be within 26 cm from the origin.
 As we will see in chapter \ref{chap:tracking-performance}, the ATLAS reconstruction chain eliminates secondary particle tracks by applying selection cuts on the impact parameters, which are good estimates of the vertex point, of $\abs{z_0}\le 20$ cm and $\abs{d_0}\le10$ cm. 
@@ -88,9 +92,10 @@ Similarly, we avoid training models on ``irregular" electron tracks by excluding
 Because each simulated event is generated from one hard-scattering (HS) collision and on average 200 pile-up collisions (section \ref{sect:simulated-samples}), particles originating from soft interactions outnumber HS particles by about two orders of magnitude, (figure \ref{subfig:eta-spectrum}). 
 HS particles are generally more energetic; their $\pT$ spectrum stretches up to 100 GeV, whereas that of pile-up particles strongly peaks at $\pT<1$ GeV and terminates at 20 GeV, as shown in figure \ref{subfig:pt-spectrum}. 
 % widely differ, with the former having a much longer tail.
-As a consequence, a loss function calculated from all edges in the event is dominated by examples from low-$\pT$ tracks and bias the model toward pile-up particles, at the expense of high-$\pT$ HS particles that represent the interesting physics.
+As a consequence, a loss function calculated from all edges in the event is dominated by examples from low-$\pT$ tracks and bias the model at the expense of high-$\pT$ HS particles that represent the interesting physics.
 This data imbalance largely impacts the performance, since in the presence of the magnetic field, low-$\pT$ particles have larger curvature and therefore different track pattern than do high-$\pT$ particles.
-To cope with this problem, we neglect the contribution to the loss function from particles of $\pT<1$ GeV.
+In addition, the CKF chain also targets high-\pT particle in the primary pass.
+Therefore, we neglect the contribution to the loss function from particles of $\pT<1$ GeV.
 
 \begin{figure}[h!]
 \begin{subfigure}[b]{0.49\textwidth}
@@ -140,7 +145,7 @@ The graph construction stage populates $E$ with edges, with an objective of incl
 At $\epu=200$, a $t\bar{t}$ event has $\mathcal{O}(10^5)$ space points, and a fully-connected graph, though simple, would have $\mathcal{O}(10^{10})$ edges, most of which are unphysical and a too expensive to process.
 Such a sizeable graph would also be unable to fit on the GPU memory. 
 Therefore, more clever methods are needed to construct the graph. 
-We investigate two graph construction methods: Module Map and Metric Learning. 
+We investigate two approaches to construct graphs: Module Map and Metric Learning.
 
 \subsection{The Module Map Method}
 \label{subsect:module-map}
@@ -151,7 +156,7 @@ It is therefore possible to create a list of all pairs of detector modules conne
 By following the path of each target particle and recording pairs of modules that it sequentially traverses, we build up this list and call it the \textbf{Module Map}. 
 To maximize the coverage of possible module connections, 90000 $t\bar{t}$ simulated events described in section \ref{sect:simulated-samples} are used
 
-Illustrated in figure \ref{fig:module-map} is an example of module map learning, in which two particles are observed to sequentially hit modules $1\rightarrow2\rightarrow 3 \rightarrow 4 \rightarrow 5 \rightarrow 6$ and $3\rightarrow 4 \rightarrow 7 \rightarrow 8 \rightarrow 9$. 
+Illustrated on the left-hand side of figure \ref{fig:module-map} is an example of module map learning, in which two particles are observed to sequentially hit modules $1\rightarrow2\rightarrow 3 \rightarrow 4 \rightarrow 5 \rightarrow 6$ and $3\rightarrow 4 \rightarrow 7 \rightarrow 8 \rightarrow 9$. 
 From these particles, connections between the following pairs of modules (1,2), (2,3), (3,4), \textbf{(4,5)}, (5,6), \textbf{(4,7)}, (7,8), and (8,9) are registered to the module map (note the presence of two connections sharing module number \textbf{4}). 
 As more particles are observed, the set of recorded connections grows, covering a wider range of module connectivity.
 The idea is that once the number of observed events is large enough, the map is saturated and becomes a ``dictionary" of all possible module connections.
@@ -159,12 +164,15 @@ The idea is that once the number of observed events is large enough, the map is 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{figures/module-map.png}
-    \caption{Principle of the Module Map method for graph construction.  By observing the trajectory of target particles in 90000 $t\bar{t}$ events, a list of all pairs of detector modules sequentially traversed by a particle is built. During event reconstruction, the space points residing on the pairs of modules which appear in the module map are connected by an edge. A set of selections are applied to reduce the number of edges and eliminate outliers.}
+    \caption{Principle of the Module Map method for graph construction. On the left, hits from target particles on 9 detector modules in a $t\bar{t}$ event is observed and module connections are recorded. 
+    By observing the trajectory of target particles in 90000 $t\bar{t}$ events, a list of all pairs of detector modules sequentially traversed by a particle is built. 
+    During reconstruction of a new unobserved event on the right, the space points residing on the pairs of modules which appear in the module map are connected by an edge. 
+    A set of selections are applied to reduce the number of edges and eliminate outliers.}
     \label{fig:module-map}
 \end{figure}
 
 When building a graph from an event \textit{which has not been seen} by the Module Map, out of all possible connections between space points, only those linking pairs of modules present in the Module Map are admitted to become graph edges. 
-On figure \ref{fig:module-map}, for example, 10 space points on 9 modules are recorded in the new event, with 2 space points present on module 3. 
+On the right-hand side of figure \ref{fig:module-map}, for example, 10 space points on 9 modules are recorded in the new event, with 2 space points present on module 3. 
 The module map therefore admits connections between space points residing on the following module pairs: (1,2), $(2,3_1)$, $(2,3_2)$, $(3_1,4)$, $(3_2,4)$, (4,5), (4,7), (5,6), (7,8), (8,9), with subscripts indicating different space points on the same module where necessary. 
 The module map thus allows to select a small subset of the 90 possible connections, based on our previous observations. 
 
@@ -175,7 +183,7 @@ Nevertheless, the average number of edges in graphs constructed from the triplet
 On the chosen GNN architecture, we found that a GPU with 80GB memory is capable of running the forward pass with gradient tracking on $\sim 2\times 10^6$ edges/graph, which is the target of graph construction. 
 The number of edges per event acts as a batch size which can limit the number of trainable parameters in a neural network and its expressive power.
 % In addition, the number of target edges per event is of $\mathcal{O}(10^4)$, a graph of $\mathcal{O}(10^8)$ edges contains far more fake than true edges and creates a severe class imbalance.
-In addition, processing a massive graph of mostly fake edges is a computing a bottleneck. 
+In addition, processing a massive graph of mostly fake edges is a computing a bottleneck and a waste of computing resource for the powerful GNN, when most of them can be filtered out by simpler techniques. 
 To build leaner graphs, additional selection requirements are imposed on doublets and triplets in the ``crude" module map graphs.
 
 Edge selections are based on geometric features derived from the connected space points. 

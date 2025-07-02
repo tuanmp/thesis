@@ -28,7 +28,7 @@ An inference pipeline in \textsc{Python}, as a part of our \textsc{R\&D} softwar
 \label{sect:opt-techniques}
 Graph neural networks are the key engine for pattern recognition in the GNN4ITk pipeline. 
 They are also the easiest to accelerate, as many techniques are well established and integrated into standard \textsc{Python} libraries. 
-We detail in this section two optimizations which in combination significantly enhance the inference speed of the \ignn, starting with Automated Mixed Precision, followed by Ahead-Of-Time compilation.
+We detail in this section two optimizations which in combination significantly enhance the inference speed of the \ignn, starting with Automated Mixed Precision, followed by Just-In-Time compilation.
 
 \subsection{Automatic mixed precision (AMP)}
 Reduced precision is a common technique in machine learning to enhance latency and reduce memory footprint.
@@ -50,11 +50,11 @@ We examine the latency and accuracy of the \ignn under FP16, or half-precision, 
 
 
 
-\subsection{Ahead-Of-Time (AOT) compilation}
+\subsection{Just-In-Time (JIT) compilation}
 
 Compilation is a mechanism to optimize the performance and deployability of deep learning models by transforming dynamic \textsc{Python} code into an intermediate representation that can be efficiency executed. 
 \textsc{PyTorch} \cite{pytorch}'s eager execution model is highly expressive and user-friendly but also incurs significant overhead due to the dynamic nature of \textsc{Python} and the interpreter. 
-Ahead-of-time compilation address this limitation by capturing, transforming, and optimizing the execution of \textsc{PyTorch} models at runtime, thereby delivering substantial speedups while maintaining full compatibility with native \textsc{Python} constructs.
+Just-In-time compilation address this limitation by capturing, transforming, and optimizing the execution of \textsc{PyTorch} models at runtime, thereby delivering substantial speedups while maintaining full compatibility with native \textsc{Python} constructs.
 
 Under the hood, \textsc{PyTorch} performs a series of sophisticated transformations to analyze the computational graph\footnote{A model is essentially a computational graph, to be distinguished from the graph data on which it operates.} for efficient execution on both CPUs and GPUs. 
 The first step translates the model into a graph of symbolic functional transformations (FX), in which each node represents the sequence of computations.
@@ -99,14 +99,14 @@ The average execution time and peak memory consumption as functions of the optim
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.8\linewidth]{figures/compute-opt.png}
-    \caption{Computational efficiency of the \ignn~in terms of the execution time (left vertical axis) and peak memory (right vertical axis), measured using the baseline configuration, and configuration optimized with automated mixed precision (AMP), Ahead-of-time computation (AOT), and a combination of the two techniques. All measurements use graphs constructed with the Module Map MinMax method.}
+    \caption{Computational efficiency of the \ignn~in terms of the execution time (left vertical axis) and peak memory (right vertical axis), measured using the baseline configuration, and configuration optimized with automated mixed precision (AMP), Just-In-time computation (JIT), and a combination of the two techniques. All measurements use graphs constructed with the Module Map MinMax method.}
     \label{fig:gnn-opt}
 \end{figure}
 
 The baseline configuration shows a latency of $\approx600$ ms/event on the A100 platform, and 264 ms/event on the H100 platform.
 The H100's better performance is due to enhanced floating-point operation efficiency on FP32, namely 67 TFLOPS compared to 19.5 TFLOPS on the A100.
 Under reduced precision, the latency is reduced by approximately 1/3 compared to the baseline on the A100, reaching on average 391 ms/event (40GB) and 362 ms/event (80GB), but only by a small margin on the H100, reaching 239 ms/event.
-With AOT compilation, the execution time is enhanced to $\approx 200$ ms/event on both A100 platforms, and 92 ms/event on the H100.
+With JIT compilation, the execution time is enhanced to $\approx 200$ ms/event on both A100 platforms, and 92 ms/event on the H100.
 Under the combined effect of both techniques, the execution time is significantly reduced to $\le 60$ ms/event across all platform. 
 
 Table \ref{tab:gnn-comp-improve} shows the improvement in inference speed with respect to eager computation at full precision of each optimization. 
@@ -123,7 +123,7 @@ Interestingly, the performance boost delivered by the combined technique exceeds
         Compilation & 2.97 & \textbf{3.02} & 2.77 \\
         Combined & 9.69 & \textbf{10.58} & 5.92 \\ \hline
     \end{tabular}
-    \caption{Latency improvement over eager computation at full precision of each optimization, measured using the baseline configuration, and configurations optimized with automated mixed precision (AMP), AOT compilation, and a combination of both techniques. All measurements use graphs constructed with the Module Map MeanRMS method.}
+    \caption{Latency improvement over eager computation at full precision of each optimization, measured using the baseline configuration, and configurations optimized with automated mixed precision (AMP), JIT compilation, and a combination of both techniques. All measurements use graphs constructed with the Module Map MeanRMS method.}
     \label{tab:gnn-comp-improve}
 \end{table}
 
@@ -148,7 +148,7 @@ at the same time~\cite{zhao2025trackreconstructionservicecollider}.
         \caption{}
         \label{subfig:gnn-time-hist}
     \end{subfigure}
-    \caption{GPU time of the \ignn~as a function of the number of space points in a $t\bar{t}$ event (a) and as a histogram (b), measured using the baseline configuration, and configurations optimized with automated mixed precision (AMP), AOT compilation, and a combination of both techniques. Each dashed line in (a) displays the best-fit second-order polynominal to the corresponding configuration. The fitted coefficients are exhibited in table \ref{tab:gnn-time-node-fit}. All measurements are performed on an NVIDIA-A100 GPU with 80 GB of memory, using graphs constructed with the Module Map MeanRMS method.}
+    \caption{GPU time of the \ignn~as a function of the number of space points in a $t\bar{t}$ event (a) and as a histogram (b), measured using the baseline configuration, and configurations optimized with automated mixed precision (AMP), JIT compilation, and a combination of both techniques. Each dashed line in (a) displays the best-fit second-order polynominal to the corresponding configuration. The fitted coefficients are exhibited in table \ref{tab:gnn-time-node-fit}. All measurements are performed on an NVIDIA-A100 GPU with 80 GB of memory, using graphs constructed with the Module Map MeanRMS method.}
     \label{fig:gnn-time-node}
 \end{figure}
 
@@ -188,7 +188,7 @@ This weak scaling makes the computation less susceptible to large events outside
 \section{Pipeline computational performance}
 \label{sect:pipeline-comp-perf}
 The average latency of each stage in the GNN4ITk algorithm is shown in table \ref{tab:pipeline-comp-perf}, along with the average total execution time. 
-The edge classification stage is measured with combined AMP and AOT optimization in all three variants.
+The edge classification stage is measured with combined AMP and JIT optimization in all three variants.
 Among the stages, graph segmentation is the slowest, contributing nearly 60\% of the total run time, while graph construction and edge classification each account for 20\%.
 The difference in latency can be attributed to the different hardware on which these stages take place.
 Graph construction in the Module Map method is carried out on the GPU, by means of a custom CUDA kernel that highly parallelizes many steps of the algorithm.
