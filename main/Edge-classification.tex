@@ -274,13 +274,20 @@ Although the edge purity remains low, of $\mathcal{O}(1\%)$, the Filter network 
 Recall that the Filter network aims to bring the number of edges down to a reasonable level, so it is more important to avoid falsely rejecting target edges than to eliminate \textit{all} fake edges. 
 This mission is reserved for a larger, more sophisticated \ignn introduced in the next section.
 
+The Filter network can be compared to the geometric cuts of the Module Map approach. 
+Both serve to reduce the large number of edges present in graphs constructed by the k-Nearest-Neighbor or the Module Map 
+by filtering out edges that do not meet some selection criteria.
+The geometric cuts make reject the edge based entirely on local and hand-engineered edge features computed from the features of the connected nodes.
+The Filter network, on the other hand, constructs a single edge score from the local node features and information from other nodes in the neighborhood, 
+and makes a rejection decision based on it.
+
 \begin{table}[h!]
     \centering
     \begin{tabular}{l|c|c|c}
       Graph Construction Method  & Edge efficiency [\%] & Edge Purity [\%] & Number of edges  \\
       \hline \hline
-        Module Map {\textsc{MinMax}} & 99.69 & & $1.22\times 10^6$ \\
-        Module Map {\textsc{MeanRMS}} & 99.51  & & $8.55\times 10^5$ \\
+        Module Map {\textsc{MinMax}} & 99.69 & 1.08 & $1.22\times 10^6$ \\
+        Module Map {\textsc{MeanRMS}} & 99.51  & 1.56 & $8.55\times 10^5$ \\
         Metric Learning + Filter & 99.53  & 1.48 & $9.76\times 10^5$\\
         \hline
     \end{tabular}
@@ -289,7 +296,7 @@ This mission is reserved for a larger, more sophisticated \ignn introduced in th
     \label{tab:graph-contruction-comparison}
 \end{table}
 
-Table \ref{tab:graph-contruction-comparison} compares properties of graphs produced by Metric Learning and Filter networks to those produced by the Module Map method. 
+Table \ref{tab:graph-contruction-comparison} compares properties of graphs produced by Metric Learning and Filter network to those produced by the Module Map method. 
 They all have high edge efficiency, with $\epsilon> 99.5\%$. 
 The Module Map with \textsc{MinMax} selection creates edges with $1.2$ million edges, while the other methods yield fewer than 1 million edges. 
 

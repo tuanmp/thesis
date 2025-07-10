@@ -12,7 +12,8 @@
 % % \end{itemize}
 
 \section{The ATLAS detector}
-The ATLAS (A Toroidal LHC ApparatuS) detector is a general-purpose detector, along with CMS, designed to observe any new physics phenomena that the LHC can discover. It is a cylindrical structure constructed around the beam pipe at one of the collision points on the LHC, comprised of an Inner Detector (ID), an electromagnetic calorimeter, a hadronic calorimeter, and a muon spectrometer. Being the largest of the LHC detectors, it spans 44m in length and 25m in height, as shown in figure \ref{fig:atlas-schematic}.
+The ATLAS (A Toroidal LHC ApparatuS) \cite{atlas_exp_2008} detector is a general-purpose detector, along with CMS~\cite{The_CMS_Collaboration_2008}, designed to observe any new physics phenomena that the LHC can discover. It is a cylindrical structure constructed around the beam pipe at one of the collision points on the LHC, 
+comprised of an Inner Detector (ID) \cite{ATLAS-TDR-04, ATLAS-TDR-05}, an electromagnetic calorimeter \cite{ATLAS-TDR-01, ATLAS-TDR-02}, a hadronic calorimeter \cite{ATLAS-TDR-03}, and a muon spectrometer \cite{ATLAS-TDR-10}. Being the largest of the LHC detectors, it spans 44m in length and 25m in height, as shown in figure \ref{fig:atlas-schematic}.
 
 The detector's geometry facilitates the use of a right-handed cylindrical coordinate system to describe locations and directions, with the nominal interaction point (IP) at the origin. The $z$-axis points along the beam pipe, parallel to the direction of the incoming protons. The $x$-axis points from the IP towards the center of the LHC. Any position is described by $(r, \phi, z)$, where $\phi \in [-\pi, \pi)$. Particle momentum can be represented by a four-vector $p=(E, p_x, p_y, p_z)$. In practice, however, the rapidity, define as 
 \begin{equation}
@@ -38,7 +39,9 @@ Each subsystem of ATLAS has a different acceptance, in particular, $\abs{\eta}<2
 
 \subsection{The Inner Detector}
 \label{subsect:inner-detector}f
-Immediately surrounding the interaction point is the Inner Detector, consisting of 3 subsystems constructed from two sensor technologies. These subsystems include a Pixel detector, a Semi-Conductor Tracker (SCT), and a Transition Radiation Tracker (TRT), in order of increasing radial distance from the IP. 
+Immediately surrounding the interaction point is the Inner Detector \cite{ATLAS-TDR-04}, consisting of 3 subsystems constructed from two sensor technologies. 
+These subsystems include a Pixel detector \cite{ATLAS-TDR-11}, a Semi-Conductor Tracker (SCT) \cite{IDET-2013-01}, 
+and a Transition Radiation Tracker (TRT) \cite{IDET-2015-01}, in order of increasing radial distance from the IP. 
 The first two use silicon sensors to detect the passage of a charged particle and the latter a collection of gas-filled straw tube and a tungsten wire to collect the secondary radiation engendered from the particle.
 
 The ID is responsible for precise measurements of discrete points along the path of a charged particle, from which its trajectory (tracks) is reconstructed. 
@@ -58,9 +61,9 @@ In particular, the relative momentum resolution $\pT\sigma(\frac{q}{\pT})$ is $O
 This level of resolution is remarkable considering the physical dimensions of ATLAS, which can only be achieved through meticulous custom designs of the subsystems described below.
 
 \subsubsection{The Pixel Detector}
-The pixel detector (figure \ref{fig:atlas-pixel}) is the innermost part of the ID, consisting of 3 barrel layers extending from a radius of $r=50.5\, mm$ up to $r=122.5\, mm$, and 3 end-cap disks on each sides of the barrel. Each of these physical layers provides a structure onto which detector modules are mounted. Each barrel layer consists of supporting staves, and each end-cap of 8 sectors circularly arranged around the $z$-axis. In total, the pixel detector has 1744 identical modules, each composed of an array of silicon sensor and 16 front-end chips which read out the electrical signal created by the passage of a charge particle~\cite{front-end-chips}.
+The pixel detector \cite{ATLAS-TDR-11} (figure \ref{fig:atlas-pixel}) is the innermost part of the ID, consisting of 3 barrel layers extending from a radius of $r=50.5\, mm$ up to $r=122.5\, mm$, and 3 end-cap disks on each sides of the barrel. Each of these physical layers provides a structure onto which detector modules are mounted. Each barrel layer consists of supporting staves, and each end-cap of 8 sectors circularly arranged around the $z$-axis. In total, the pixel detector has 1744 identical modules, each composed of an array of silicon sensor and 16 front-end chips which read out the electrical signal created by the passage of a charge particle~\cite{front-end-chips}.
 
-A sensor element is fabricated from a detector-grade n-type silicon wafer implanted with high positive ($p^+$) and negative ($n^+$) dose regions on each side. 
+A sensor element is fabricated from a detector-grade n-type silicon wafer implanted with high positive ($p^+$) and negative ($n^+$) dose regions on each side \cite{PERF-2015-01}. 
 At the $p^+$-$n$ junction, holes from the $p^+$ region neutralize free electrons in the $n$-typed bulk, creating a depletion zone devoid of free charge carriers. 
 Operated in a reverse bias, this region is enlarged over the whole sensor bulk volume. 
 Although containing no free charge carrier, the $pn$-junction is easily ionized by a traversing particle, creating electron-hole pairs. 
@@ -68,9 +71,9 @@ Primary electrons directly created by the traversing particle are often energeti
 Electron-hole pairs are separated by the biasing electric field and drift toward their corresponding electrodes. 
 As electrons approach the anode, they are multiplied and measured by the read-out chips.
 
-The sensitive part of a pixel module is approximately $2\times 6\,cm^2$ in size, segmented into highly granular pixels of dimensions $50\times 400 \, \mu m^2$, totalling 47268 pixels. 
+The sensitive part of a pixel module is approximately $2\times 6\,cm^2$ in size, segmented into highly granular pixels of dimensions $50\times 400 \, \mu m^2$, totalling 47268 pixels \cite{ID-pixel}. 
 Nearly every pixel corresponds to a readout channel, providing the pixel detector approximately 80 million channels. 
-With the inclusion of the Insertable B-Layer (IBL), the total number of channels the smallest pixel dimension is reduced to $50\times 250$ $\mu m^2$, and the total number of readout channels increased to $94$ million. 
+With the inclusion of the Insertable B-Layer (IBL) \cite{ATLAS-TDR-19}, the total number of channels the smallest pixel dimension is reduced to $50\times 250$ $\mu m^2$, and the total number of readout channels increased to $94$ million. 
 This high level of granularity enables high precision measurements very close to the beam pipe.
 
 \begin{figure}[h!]
@@ -94,7 +97,7 @@ This high level of granularity enables high precision measurements very close to
 
 \subsubsection{The Semi-Conductor Tracker}
 
-Surrounding the Pixel volume is the Semi-Conductor Tracker (SCT), consisting of four barrel layers and eighteen symmetric end-cap disks, both featuring a total of 4088 strip modules \cite{ATLAS-TDR-04, ATLAS-TDR-05}. 
+Surrounding the Pixel volume is the Semi-Conductor Tracker \cite{IDET-2013-01}, consisting of four barrel layers and eighteen symmetric end-cap disks, both featuring a total of 4088 strip modules \cite{ATLAS-TDR-04, ATLAS-TDR-05}. 
 Figure \ref{subfig:strip-module} provides an overview of a strip module used in the barrel layers. 
 Each detector module consists of two pairs of single-sided microstrips with $80$ $\mu m$ pitch. 
 Each single strip sensor is capable of detecting particle intersection in one dimension, information from a pair of strips must be combined to provide three-dimensional point information with space-point resolution of 16 $\mu m$ in the $(R-\phi)$ direction and 580 $\mu m$ in the $z$-direction \cite{BARONE201357}. 
@@ -126,7 +129,7 @@ Each single strip sensor is capable of detecting particle intersection in one di
 % \end{figure}
 
 \subsubsection{The Transition Radiation Tracker}
-The Transition Radiation Tracker (TRT) is the outermost component of the Inner Detector. 
+The Transition Radiation Tracker \cite{IDET-2015-01} is the outermost component of the Inner Detector. 
 It comprises of approximately 300000 straw tubes that are 4 $mm$ in diameter, and covers up to $\abs{\eta}=1$ in the barrel and $\abs{\eta} =2$ in the end-cap layers. 
 Each high $\pT$ track passing through the TRT leaves $30-36$ hits and reach a resolution of 130 $\mu m$ in the $(R-\phi)$ direction. 
 
@@ -148,7 +151,7 @@ In the case of the hadronic calorimeters, a hadron interacts with the atomic nuc
 In addition, neutral pion decays to high-energy photon and leptonic decays can also induce electromagnetic sub-shower within a hadronic shower. 
 
 \subsubsection{The electromagnetic (EM) calorimeter}
-The passive absorber material in the ATLAS electromagnetic calorimeter comprises of lead, and the active material of liquid argon. 
+The passive absorber material in the ATLAS electromagnetic calorimeter comprises of lead, and the active material of liquid argon \cite{ATLAS-TDR-02}. 
 The passive layers are interspersed with active layers in an accordion pattern. 
 The barrel covers a pseudorapidity range up to $\abs{\eta} = 1.475$ and the endcaps $1.375 < \abs{\eta}<3.2$. 
 The central region of the EM calorimeter consists of three layers and a pre-sampler with a fine granularity $(\eta\times\phi=0.025\times 0.1)$. 
@@ -171,12 +174,12 @@ Figure \ref{subfig:em-calorimeter-module} shows a sketch of the EM calorimeter m
     \caption{}
     \label{subfig:em-calorimeter-module}
     \end{subfigure}
-    \caption{(a) Layout of the ATLAS calorimetry system, and (b) sketch of a barrel module of the electromagnetic calorimeter~\cite{atlas_exp_2008}.}
+    \caption{(a) Layout of the ATLAS calorimetry system, and (b) sketch of a barrel module of the electromagnetic calorimeter~\cite{ATLAS-TDR-01, ATLAS-TDR-02}.}
     \label{fig:calorimeter}
 \end{figure}
 
 \subsubsection{The hadronic calorimeter}
-The hadronic calorimeter uses iron absorbers and plastic scintillating tiles as active material in the barrel region. 
+The hadronic calorimeter uses iron absorbers and plastic scintillating tiles as active material in the barrel region \cite{ATLAS-TDR-03}. 
 It covers a pseudorapidity range of $\abs{\eta} < 1.0$ in the barrel and $0.7 < \abs{\eta} < 1.7$ in the extended barrel. 
 It also comprises of three layers of increasing radii. 
 The effective granularity varies between $\eta\times\phi=0.1\times 0.1$ and $0.2\times 0.1$. 
@@ -188,8 +191,8 @@ The forward calorimeter is split into an electromagnetic and a hadronic componen
 \subsection{The muon spectrometer}
 Unlike other particles, muons produced with energy in the range of $0.1-100$ GeV typically seen in ATLAS do not strongly interact with detector material in the detector subsystems described in the previous sections. 
 Despite leaving energy clusters in the ID, they traverse the calorimeters intact are therefore measured by a dedicated muon system. 
-The muon spectrometer is composed of four subsystems that use different technologies to track muon at high precision and perform fast triggers. 
-It is immersed in a toroidal magnetic field ranging from 2.0 to 6.0 T, providing enough bending power to resolve the muon transverse momentum. 
+The muon spectrometer is composed of four subsystems that use different technologies to track muon at high precision and perform fast triggers \cite{ATLAS-TDR-10}. 
+It is immersed in a toroidal magnetic field ranging from 2.0 to 6.0 T, providing enough bending power to resolve the muon transverse momentum \cite{ATLAS-TDR-06}. 
 Figure \ref{fig:MS-system} shows the overall layout of and a side view of a quadrant of the MS, including its subsystems. 
 
 \begin{figure}[h!]

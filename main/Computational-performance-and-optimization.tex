@@ -46,9 +46,11 @@ Roughly speaking, the 23 mantissa bits allow to express numbers with lower thres
 However, during inference, such a wide range and high precision may not be necessary to achieve good accuracy, since no gradient calculation, which is prone to numerical explosion and vanishing, takes place. 
 If the network output is stable under smaller bit widths, it is possible to decrease memory footprint, improve computational efficiency, and reduce power consumption by simply lowering the precision. 
 We examine the latency and accuracy of the \ignn under FP16, or half-precision, in comparison to the baseline single-precision.
-[Figure]
 
-
+% \begin{figure}
+%     \centering
+    
+% \end{figure}
 
 \subsection{Just-In-Time (JIT) compilation}
 
@@ -188,26 +190,32 @@ This weak scaling makes the computation less susceptible to large events outside
 \section{Pipeline computational performance}
 \label{sect:pipeline-comp-perf}
 The average latency of each stage in the GNN4ITk algorithm is shown in table \ref{tab:pipeline-comp-perf}, along with the average total execution time. 
-The edge classification stage is measured with combined AMP and JIT optimization in all three variants.
-Among the stages, graph segmentation is the slowest, contributing nearly 60\% of the total run time, while graph construction and edge classification each account for 20\%.
+As of writing, a number of latency measurements are not available.
+On graphs constructed by the Module Map MeanRMS approach, the latency of both graph construction and segmentation stages has not been thoroughly measured, and on those 
+constructed by the Metric Learning approach, the latency of the graph segmentation stage is missing.
+% However, we expect that the GPU 
+We expect the latency to vary by a small margin among the three pipelines, thanks to the similar average size of the remaining graphs after applying a loose score cut in the Walkthrough algorithm.
+The difference in graph construction latency of the two Module Map approaches remains to be determined.
+
+Among all three variants of the GNN4ITk pipeline, the edge classification latency is measured with combined AMP and JIT optimizations.
+Graph segmentation is the slowest stage, contributing nearly 60\% of the total run time, while graph construction and edge classification each account for 20\%.
 The difference in latency can be attributed to the different hardware on which these stages take place.
 Graph construction in the Module Map method is carried out on the GPU, by means of a custom CUDA kernel that highly parallelizes many steps of the algorithm.
 Edge classification leverages a graph neural network whose building blocks (the feed-forward multi-layer perceptron) are natively suitable to run on the GPU, and further benefit from the optimizations detailed in section \ref{sect:opt-techniques}.
 As a result, both stages are optimized for and performed on the GPU, and are thus massively accelerated.
 In comparison, the Walkthrough algorithm used in graph segmentation, originally conceived as an \textit{ad hoc} routine, contains many loops and logical \textsc{If-Then} statements (see section \ref{sect:walk}), and is thus difficult to parallelize.  
 Although much effort has been put into optimizing the current implementation, a mechanism redesign that prioritizes parallelizability is necessary to accelerate it on the GPU and bring the entire GNN4ITk algorithm onto a single hardware architecture.
-As of writing, a CUDA-based version of the Walkthrough is under development, promising better latency in the future. 
-% its implementation are not GPU-friendly 
+A CUDA-based version of the Walkthrough algorith is under development, promising better latency in the future. 
 
 \begin{table}[h!]
     \centering
     \begin{tabular}{|l|c|c|c|} \hline
         \multirow{2}*{ Stage } & \multicolumn{3}{c|}{ Latency [ms/event] } \\ \cline{2-4}
          & MeanRMS& MinMax & Metric Learning\\ \hline\hline
-        Graph construction & $41\pm 10$ & $41\pm 11$ & $932\pm 92$ \\
+        Graph construction & & $41\pm 11$ & $932\pm 92$ \\
         Edge classification & $42\pm 9$ & $53\pm 12$ &  $47\pm10$  \\
-        Graph segmentation & $120\pm 93$ & $120\pm 93$ &  \\ \hline \hline
-        Total & $203\pm 94$ & &\\ \hline
+        Graph segmentation & & $120\pm 93$ &  \\ \hline \hline
+        Total &  & $203\pm 94$ &\\ \hline
     \end{tabular}
     \caption{Per-event run time of each stage in the GNN4ITk algorithm. The latency of graph construction and edge classification is evaluated on an NVIDIA-A100 GPU with 80GB of memory, and of graph segmentation on the AMD EPYC 7763 CPU, using graphs constructed with the Module Map MeanRMS method.}
     \label{tab:pipeline-comp-perf}
@@ -216,11 +224,12 @@ Of the two graph construction approaches, Module Map is significantly faster tha
 The former is carried out by a custom CUDA-kernel which maximally parallelizes all steps of the graph creation on the GPU, most notably the \textsc{Merge/Join} operations of data frames,
 which consume considerable computation on the CPU but are greatly accelerated on the GPU~\cite{cudf}.
 On the other hand, the latter's graph construction latency is the sum of the metric learning and filter steps, both of which, as of writing, have not been optimized.
-The metric learning step suffers from a lengthy kNN search in high a 12-dimensional space, and the filter step operates on large graphs of $\abs{V}\sim 6\times 10^6$ edges. 
+The metric learning step suffers from an intensive kNN search in a 12-dimensional space, and the filter step operates on large graphs of $\abs{V}\sim 6\times 10^6$ edges. 
 These shortcomings are however optimizable, and methods to address them are being investigated. 
 In the edge classification step, both graph construction approaches demonstrate similar speed, ranging from 42 to 53 ms/event.
 Their difference in latency is evident from the average graph size, with $\abs{E}_{\mathrm{MinMax}} > \abs{E}_{\mathrm{ML}} > \abs{E}_{\mathrm{MeanRMS}}$, and correspondingly $t_{\mathrm{MinMax}} > t_{\mathrm{ML}} > t_{\mathrm{MeanRMS}}$, where $E$ is the edge set and $t$ the latency.
-In the graph segmentation step, after fake edges are removed by a loose GNN score cut, the remaining graphs have similar edge set among the three variants, and their track building time is largely in accordance.
+As of writing the latency of the graph segmentation step has only been measured on graphs constructed by the Module Map MinMax method. 
+% In the graph segmentation step, after fake edges are removed by a loose GNN score cut, the remaining graphs have similar edge set among the three variants, and their track building time is largely in accordance.
 
 % Unlike the case of the tracking performance, it is not straightforward to compare the CKF- and GNN-based track finders in terms of the computing performance.
 A comparison between the GNN- and the CKF-based track finders in terms of computing performance is unfortunately not straightforward.
