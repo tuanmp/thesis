@@ -21,7 +21,7 @@ Finally, section \ref{sect:track-performance} is an apple-to-apple comparison be
 
 % The least-square method for parameter estimation is ubiquitously used to extract unknown quantities from data. 
 As mentioned in section \ref{sect:track-fit}, the tracking model used in ATLAS considers the local coordinates of individual clusters as measurements.
-A GNN track candidate, however, is a list of space points reconstructed from these clusters, according to section \ref{sect:cluster-spacepoint}. 
+A GNN track candidate, however, is a list of space points reconstructed from these clusters as described in section \ref{sect:cluster-spacepoint}. 
 To carry out the fit, the space points are first matched to their corresponding clusters. 
 A pixel space point is matched to a unique pixel cluster, while a strip space point is matched to two strip clusters, each from one side of a barrel stave or an endcap petal (see section \ref{sect:itk-overview}). 
 The building block of track candidates is a major difference between the GNN-based and the current tracking algorithm, which has implications in the interpretation of results.
@@ -40,7 +40,8 @@ The track parameters vary continuously along the trajectory, and the measurement
 The local coordinates $(l^{(1)}, l^{(2)})$ take different meaning depending on the measuring surface. 
 For example, on a disk, they are the polar coordinates $(l^{(1)}, l^{(2)}) = (R_{loc}, \phi_{loc})$ of the cluster, while on a plane, they are given in Cartesian coordinates $(l^{(1)}, l^{(2)}) = (X_{loc}, Y_{loc})$.
 The perigee parametrization, shown in figure \ref{fig:track-param}, is an imaginary cylindrical surface parallel to the global $z$-axis and passing through the point of closest approach to the origin\footnote{This point is defined as the perigee, hence the designation.}.
-The local parameters $(l^{(1)}, l^{(2)}) = (d_0, z_0)$ are respectively the transverse and longitudinal impact parameters, which, along with other global parameters estimated at this position, are reported as \textit{the} track parameters of the corresponding hypothetical particle. 
+The local parameters $(l^{(1)}, l^{(2)}) = (d_0, z_0)$ are respectively the transverse and longitudinal impact parameters, which, 
+along with other global parameters estimated at this position, are reported as \textit{the} track parameters of the corresponding hypothetical particle. 
 The perigee parameters are the quantity denoted by $\mathbf{x}_0$ in the discussion in \ref{sect:track-fit}.
 
 \begin{figure}[h!]
@@ -90,12 +91,13 @@ If the position of $\bfx'$ coincides with a sensitive element, an expected value
 the measurement error as a function of $\bfx$.
 Repeating this process, taking $\bfx$ as the initial value, we can define the measurement error of the entire track candidate and optimize for $\bfx$.
 
-Let $M=\{\mathbf{m}_1, \dotsc , \mathbf{m}_N\}$ be the set of all clusters matched to the track candidate. The cost function can be written as a function of an initial state $\mathbf{x}$ as
+Let $M=\{\mathbf{m}_1, \dotsc , \mathbf{m}_N\}$ be the set of all clusters matched to the track candidate. 
+The cost function can be written as a function of an initial state $\mathbf{x}$ as
 \beq
 \label{eq:track-performance:5}
 \boxed{\mathcal{L}_{M}(\mathbf{x}, \vartheta) = \frac{1}{2}\sum_{i=1}^{N} [\mathbf{m}_i - \mathbf{H}_i f_i(\mathbf{x}, \vartheta) ]^T \mathbf{V}_i^{-1} [\mathbf{m}_i - \mathbf{H}_i f_i(\mathbf{x}, \vartheta) ] + \frac{1}{2}\sum_{j=1}^{J} \frac{\vartheta_j^2}{\sigma^2(\vartheta_j)},}
 \eeq
-in which, as discussed in section \ref{sect:track-fit}, the set of angles $\{\vartheta_j\}$  is included to model small-angle multiple scatterings due to interaction with the detector material. 
+in which, as discussed in section \ref{sect:track-fit}, the set of angles $\{\vartheta_j\}$ is included to model small-angle multiple scatterings due to interaction with the detector material. 
 These angles are assumed to be normally distributed with mean $\expval{\vartheta_j}=0$ and variance estimated by the Highland formula \eqref{eq:6.14}. 
 It is important to note that these scattering angles are floated as fit parameters, but they are constrained by the variances $\sigma^2(\vartheta_j)$ which \textbf{are} functions of the trajectory and therefore the initial state $\mathbf{x}$.
 
@@ -136,9 +138,10 @@ It is for this reason that the evaluation can only be done with Monte-Carlo simu
     \eeq
     in which $N_{truth}$ is the number of particle passing a set of reconstructibility criteria, and $N_{reco}$ the number of those matched to a ``good" track candidate.
 \end{definition}
-It is important to distinguish the tracking efficiency the edge efficiency defined in equation \eqref{eq:9.2}. 
+It is important to distinguish the tracking efficiency from the edge efficiency defined in equation \eqref{eq:9.2}. 
 The former is defined on the set of truth particles, while the latter the set of edges between space points reconstructed from truth particles. 
-While the edge efficiency is useful in machine learning development, only the tracking efficiency is meaningful in the performance presented in this chapter, and, to a larger extent, in the ATLAS event reconstruction chain.
+While the edge efficiency is useful in machine learning development, only the tracking efficiency is meaningful in the performance presented in this chapter, 
+and, to a larger extent, in the ATLAS event reconstruction chain.
 
 A matched track candidate is required to have a high matching probability with the particle in question, defined as follows.
 \begin{definition}
@@ -150,7 +153,7 @@ A matched track candidate is required to have a high matching probability with t
     where $S_{pix}$ and $S_{strip}$ respectively denote the subsets of pixel and strip clusters of set $S$.
 \end{definition}
 Intuitively, a track candidate has a high probability of matching to a particle if the majority of its hits originate from that particle. 
-The factor of 2 gives a doublet the weight to a pixel cluster, because it provides a 2D measurement of the track, whereas a strip cluster provides only 1\footnote{Remember that it takes 2 measurements (2 clusters) from a double-sided strip layer to form a 3D space point.}.
+The factor of 2 doubles the weight of a pixel cluster, because it provides a 2D measurement of the track, whereas a strip cluster provides only 1\footnote{Remember that it takes 2 measurements (2 clusters) from a double-sided strip layer to form a 3D space point.}.
 A track $A$ is said to be matched to a particle $B$ if its matching probability $$P_m(A,B) > 0.5.$$
 Tracks candidates that are not matched to any particle are said to be fake.
 The fake rate is thus defined as follows.
@@ -230,7 +233,7 @@ We thus examine a second set of selections, denoted \textbf{relaxed cuts} and sh
     \caption{Relaxed selections adapted to GNN-based tracks. Modified criteria with respect to those in table \ref{tab:track-reco-cuts} are highlighted in boldface. The rest is identical to reference \cite{Aad_2025}.}
     \label{tab:track-reco-cuts-relaxed}
 \end{table}
-In particular, compare to the nominal cuts, the minimum number of clusters is decreased to 7 and the maximum number of holes increased to 4 for pseudo rapidity range $-2.6\le \eta \le 2.6$. 
+In particular, compare to the nominal cuts, the minimum number of clusters is decreased to 7 and the maximum number of holes increased to 4 for pseudorapidity range $-2.6\le \eta \le 2.6$. 
 All particle traversing this region intersect the strip detector and may produce lone clusters, as shown in figure \ref{fig:lone-cluster-distribution}.
 The selections on tracks having $\abs{\eta} > 2.6$ are identical to those in table \ref{tab:track-reco-cuts}, since this region features exclusively pixel sensors. 
 
@@ -252,7 +255,7 @@ For $\abs{\eta}<2.6$, lone clusters appear in the particle's trajectory, reachin
 Correspondingly, the efficiency in this region benefits from allowing fewer hits and more holes in the track candidate.
 For $\abs{\eta}>2.6$, the particle stays entirely in the pixel detector, thus generating no lone cluster.
 No efficiency gain from relaxed selections is observed in this region, implying that without lone clusters, the reconstructed track candidate contains fewer missing hits than it would otherwise. 
-Almost all pixel-only candidates passing other selection cuts have at most 2 holes, so they gain nothing from further increase in maximum hole count. 
+Almost all pixel-only candidates passing other selection cuts have at most 2 holes, so they gain nothing from a further increase in maximum hole count. 
 The logical conclusion of these observation is that the excess holes and deficient clusters on tracks containing strip clusters are largely due to hit inefficiency in the put rather than algorithmic inefficiency of the GNN-based track maker.
 
 \begin{figure}[h!]
@@ -286,7 +289,7 @@ The logical conclusion of these observation is that the excess holes and deficie
 \end{figure}
 
 Efficiency and fake rate are typically in a trade-off relationship, such that to increase efficiency, one often admit more track candidates by loosening some selection criteria, potentially allowing those constructed from randomly associated hits. 
-Fake tracks at best consume extra computing resources and at worse introduce bias to event- and object-level parameters, such as the missing transverse momentum $p_{T,miss}$ which is estimated as the compliment of the total visible transverse momentum. 
+Fake tracks at best consume extra computing resources and at worst introduce bias to event- and object-level parameters, such as the missing transverse momentum $p_{T,miss}$ which is estimated as the compliment of the total visible transverse momentum. 
 As parameter biases from the tracker accumulate throughout the reconstruction chain, it is particularly important to control the number of fake tracks.
 In fact, the nominal cuts in table \ref{tab:track-reco-cuts} are optimized with a primary objective of limiting the fake rate~\cite{Aad_2025}.
 
@@ -294,9 +297,11 @@ Despite the increased efficiency, no explosion in the number fake tracks is obse
 Shown in figure \ref{subfig:nominal-vs-relaxed-fake}, the average fake rate under both the nominal and the relaxed selections is of $\mathcal{O}(10^{-5})$, i.e. every 10000 track candidates contain $\mathcal{O}(1)$ fake track.
 Considering that the track builder produces about 2000 tracks per event, this fake rate implies that both sets of cuts can filter all fake candidates in the majority of events.
 Table \ref{tab:integrated-fake} shows the total number of fake candidates among 1000 test $t\bar{t}$-events produced by the GNN- and CKF-based track builders under the two sets of selections. 
-While the relaxed cuts increase the number of fake by a factor of 9 for the CKF, only a factor of 2 is observed for the GNN, in addition to its small absolute values.
+While the relaxed cuts increase the number of fake by a factor of 9 for the CKF, only a factor of 2 is observed for the GNN.
+In addition, the actual number of fake tracks remains low for the GNN.
 Therefore, for the CKF, requiring track candidates to satisfy the requirements in table \ref{tab:track-reco-cuts} is \textit{essential} to limit fake tracks and maintain good efficiency. 
-On the other hand, for the GNN4ITk, a relaxation in the minimum number of hits and the maximum number of holes in the strip region ($\abs{\eta}<2.6$) is necessary to cope with the input hit inefficiency, yet still guarantees low fake rate, thus achieving an optimal performance.
+On the other hand, for the GNN4ITk, a relaxation in the minimum number of hits and the maximum number of holes in the strip region 
+($\abs{\eta}<2.6$) is necessary to cope with the input hit inefficiency, yet still guarantees low fake rate, thus achieving an optimal performance.
 
 \begin{table}[h!]
     \centering
@@ -333,7 +338,8 @@ In light of this discussion, we propose to apply a minimally modified set of cut
 \label{subsect:tracking-efficiency}
 
 In this section, we compare the reconstruction efficiency of the three variants of the GNN-based algorithm to that of the CKF.
-Track candidates produced by the former are required to pass the quality cuts in table \ref{tab:track-reco-cuts-semi-relaxed}, and those produced by the latter are required to pass the cuts in table \ref{tab:track-reco-cuts}. 
+Track candidates produced by the former are required to pass the quality cuts in table \ref{tab:track-reco-cuts-semi-relaxed}, 
+and those produced by the latter are required to pass the cuts in table \ref{tab:track-reco-cuts}. 
 The tracking efficiency as functions of the truth $\eta$ and \pT are respectively shown in figures \ref{subfig:tracking-eff-eta} and \ref{subfig:tracking-eff-pt}. 
 The bottom plot in each figure shows the ratio between each of the GNN-based curves to the CKF-based curve.
 
@@ -356,7 +362,7 @@ The bottom plot in each figure shows the ratio between each of the GNN-based cur
 \end{figure}
 
 The tracking efficiency varies as a function of truth pseudorapidity.
-All reconstruction algorithms reache the maximum efficiency at $\abs{\eta}=0$ and $\eta=3.0$, and minimum at $\abs{\eta}=1.8$, symmetric around $\eta=0$
+All reconstruction algorithms reach the maximum efficiency at $\abs{\eta}=0$ and $\eta=3.0$, and minimum at $\abs{\eta}=1.8$, symmetric around $\eta=0$
 These variations are strongly correlated to the detector material encountered by the particle on its path, illustrated on figure \ref{subfig:rad-len-to-reco}. 
 The total radiation length traversed by a particle before reaching the minimum number of hits to be reconstructible is lowest at $\abs{\eta}=0$ and $\abs{\eta}=3.0$ 
 and peaks at $\abs{\eta}=1.5$. 
@@ -382,7 +388,8 @@ On the \pT spectrum, however, it is clear that the improvement is not evenly dis
 All of the efficiency improvement occurs on particles with low \pT, as seen on the ratio plot of figure \ref{subfig:tracking-eff-pt}, the performance at high \pT is largely similar to that of the CKF.
 High-\pT particles are rare, as they commonly originate from the hard-scattering collision, and concentrate around the barrel region.
 The absence of efficiency improvement at high \pT partially explains the comparatively smaller efficiency boost near $\eta=0$. 
-In contrast, low-\pT particles constitute the majority of target particles, orders of magnitude more abundant than their high-\pT counterparts, and are distributed quite evenly throughout the detector, which explains the excess efficiency in all $\eta$ bins on figure \ref{subfig:tracking-eff-eta}. 
+In contrast, low-\pT particles constitute the majority of target particles, orders of magnitude more abundant than their high-\pT counterparts, 
+and are distributed quite evenly throughout the detector, which explains the excess efficiency in all $\eta$ bins on figure \ref{subfig:tracking-eff-eta}. 
 
 Though not simply related, tracking efficiency is determined by the edge-level efficiency encountered the results of previous chapters.
 The impact of the uneven \pT distribution in training data on edge-level performance was already seen in section \ref{sect:filter-results}. 
@@ -570,7 +577,11 @@ In consequence, the \pT resolution decreases monotonically with $\eta$.
     \label{fig:res-pt}
 \end{figure}
 
-The transverse momentum is proportional to the radius of the curved trajectory, which in turn is geometrically constrained by the hits found between the outermost hits of the track candidate\footnote{Intuitively, imagine fitting a circle passing through two outermost points. If no intermediate points exists, any of infinitely many possible circles is equally likely, hence null constraint. If an intermediate measurement exists with some measurement error, the closer a circle passes by the points, the more likely hit is. More intermediate measurements provide better constraining power, hence better resolution.}.
+The transverse momentum is proportional to the radius of the curved trajectory, which in turn is geometrically constrained 
+by the hits found between the outermost hits of the track candidate\footnote{Intuitively, imagine fitting a circle passing through two outermost points. 
+If no intermediate points exists, any of infinitely many possible circles is equally likely, hence null constraint. 
+If an intermediate measurement exists with some measurement error, the closer a circle passes by the points, the more likely hit is. 
+More intermediate measurements provide better constraining power, hence better resolution.}.
 Therefore, the \pT resolution generally improves with the number of measurements and degrades with the number of holes of the track candidate. 
 In light of this principle, the difference in \pT resolution between the GNN4ITk and the CKF may be elucidated.
 On figure \ref{subfig:res-pt-eta}, the observed \pT resolution of the GNN4ITk is similar to that of the CKF in the all-pixel region, for $\abs{\eta}>2.6$.
@@ -584,7 +595,8 @@ On the other hand, in the barrel $(\abs{\eta}<2)$ and transition regions $(2<\ab
 The RMS width of the $\sigma(\pT)$-distribution from the GNN4ITk is at worst $8\%$ larger than from CKF.
 In this region, the GNN-based tracks contain fewer clusters and more holes than the CKF-based tracks.
 The gap is particularly pronounced in the strip detector, due to the presence of single clusters. 
-In the barrel, despite the same average number of pixel clusters and negligible numbers of pixel holes, the GNN4ITk finds about $90\%$ the average number of strip hits found by the CKF, and leaves up to 5 times the number of holes left by the latter.
+In the barrel, despite the same average number of pixel clusters and negligible numbers of pixel holes, 
+the GNN4ITk finds about $90\%$ the average number of strip hits found by the CKF, and leaves up to 5 times the number of holes left by the latter.
 In the transition region, this trend repeats.
 The combination of cluster deficiency and enrichment of holes explains the degraded \pT resolution in this region.
 In general, the GNN, being trained on incomplete data, performs worse than the CKF does in the strip detector. 

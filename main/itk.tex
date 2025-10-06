@@ -8,15 +8,19 @@
 %     \item Anything else that we need for subsequent chapters
 % \end{enumerate}
 The Inner Tracker (ITk) is the successor to the current Inner Detector (ID) in the High-Luminosity era.
-It inherits many design features from the Pixel and SCT components of the ID, but with significant improvements in granularity, geometry coverage, material budget and expected parameter resolution. 
-Understanding of its geometry and interaction with charged particles is crucial to fully simulate its detector response, extract useful information from track candidates, and interpret tracking results.
+It inherits many design features from the Pixel and SCT components of the ID, but with significant improvements in granularity, 
+geometry coverage, material budget and expected parameter resolution. 
+Understanding of its geometry and interaction with charged particles is crucial to fully simulate its detector response, 
+extract useful information from track candidates, and interpret tracking results.
 This chapter describes aspects of the ITk design and simulation, providing a foundation for the discussion in subsequent chapters. 
 
 \section{Overview of the Inner Tracker}
 \label{sect:itk-overview}
 
-The Inner Tracker consists of two silicon-based sub-detectors, a Pixel Detector close to the interaction point (IP) and a Strip Detector at a larger radius, and, unlike the Inner Detector, without the Transition Radiation Tracker. 
-They feature a total area of $180$ $\mathrm{m}^2$ with more than 5 billion readout channels, in comparison to $63$ $\mathrm{m}^2$ and 100 million channels in the ID, translating to a significant increase in granularity. 
+The Inner Tracker consists of two silicon-based sub-detectors, a Pixel Detector close to the interaction point (IP) and a Strip Detector replacing the Semi-Conductor Tracker (SCT) at a larger radius, 
+but, unlike the Inner Detector, without the Transition Radiation Tracker. 
+They feature a total area of $180$ $\mathrm{m}^2$ with more than 5 billion readout channels, 
+in comparison to $63$ $\mathrm{m}^2$ and 100 million channels in the ID, translating to a significant increase in granularity. 
 In the barrel region, the pixel subsystem comprises five layers and the strip subsystem four layers.
 Each of the endcaps is equipped with six strip rings featuring a petal design and many thin pixel rings. 
 The layout of the ITk, demonstrated in figure \ref{fig:itk-layout}, is optimized to provide maximal hit coverage across the pseudorapidity range. 
@@ -39,9 +43,9 @@ The layout of the ITk, demonstrated in figure \ref{fig:itk-layout}, is optimized
 \end{figure}
 
 The ITk is immersed in a solenoidal magnetic field of 2T, whose principal component lies largely along the $z$-axis. 
-The bending power of the magnetic field creates a curvature in the trajectory of a charged particle, from which its transverse momentum $p_T$ is deduced. 
+The bending power of the magnetic field creates a curvature in the trajectory of a charged particle, from which its transverse momentum $p_T$ is inferred. 
 In addition, the ITk produces tracking measurements in close proximity to the IP, which plays an important role in impact parameter estimation, vertex fitting and subsequent pile-up mitigation.
-In addition, the detector is designed to measure at least 9 hits per track in the barrel region and 13 in the endcaps, which provide strong constraints on the curvature of the track. 
+The detector is designed to measure at least 9 hits per track in the barrel region and 13 in the endcaps, which provide strong constraints on the curvature of the track. 
 Finally, pseudorapidity coverage is extended up to $\abs{\eta}=4$, in comparison to $\abs{\eta}<2.5$ in the ID. 
 
 The ITk layout plays an important role in simulation and event reconstruction. 
@@ -118,7 +122,13 @@ Table \ref{tab:strip-barrel} shows the number of staves, tilt angle, and strip l
     \label{fig:strip-stave-petal}
 \end{figure}
 
-The endcap region features six disks on each side, the outermost of which is located at $\abs{z}=3$ m. Each endcap disk is partitioned into 32 identical wedge-shaped petals, and each petal contains nine modules on each side organized into six subsegments referred to as rings (figure \ref{fig:strip-stave-petal}). The strips on each side are constructed with a stereo angle of $\pm20$ mrad with respect to the radial line that bisects the petal, achieving a total stereo angle of 40 mrad between the two sides. Because of the increasing circumferences of the petal rings, each of them has a distinct sensor geometry and electronic arrangement. These features are detailed in the Technical Design Report~\cite{ATLAS-TDR-25}.
+The endcap region features six disks on each side, the outermost of which is located at $\abs{z}=3$ m. 
+Each endcap disk is partitioned into 32 identical wedge-shaped petals, 
+and each petal contains nine modules on each side organized into six subsegments referred to as rings (figure \ref{fig:strip-stave-petal}). 
+The strips on each side are constructed with a stereo angle of $\pm20$ mrad with respect to the radial line that bisects the petal, 
+achieving a total stereo angle of 40 mrad between the two sides. 
+Because of the increasing circumferences of the petal rings, each of them has a distinct sensor geometry and electronic arrangement. 
+These features are detailed in the Technical Design Report~\cite{ATLAS-TDR-25}.
 
 \begin{table}[h]
     \centering
@@ -137,11 +147,14 @@ The endcap region features six disks on each side, the outermost of which is loc
 
 \section{Simulation of the Inner Tracker}
 \label{sect:itk-simulation}
-The production of data samples used to study track reconstruction in the ITk proceeds through several steps: event generation, detector simulation using \GEANT \cite{Agostinelli:2002hh}, and digitization of simulated energy deposits. 
+The production of data samples used to study track reconstruction in the ITk proceeds through several steps: event generation, detector simulation using \GEANT \cite{Agostinelli:2002hh}, 
+and digitization of the simulated energy deposits. 
 % The last step in the chain is the reconstruction of charged-particle tracks from the digitized data. In offline tracking, the reconstruction step is carried out by an algorithm called the Combinatorial Kalman Filter (CKF). The purpose of this work is finding a candidate replacement for the CKF which scales better under HL-LHC pile-up condition. 
-Detector simulation is the costliest and the most difficult step, having to account for complex detector effects on the particle's trajectory.
+Detector simulation is the most expensive and difficult step, having to account for complex detector effects on the particle's trajectory.
 Charged particles interact with the material through which they travel via several mechanisms. 
-Because material interactions can change both the magnitude and direction of particle momentum, an accurate description of the material distribution in the detector is crucial to the modelling of particle trajectories as well as the extraction of track parameters from track candidates. 
+Because material interactions can change both the magnitude and direction of particle momentum, 
+an accurate description of the material distribution in the detector is crucial to the modelling of particle 
+trajectories as well as the extraction of track parameters from track candidates. 
 Particular care was taken to describe the material at a high level of detail. 
 The dimensions, location, and material of all detector elements are implemented in the simulation framework. 
 The location of the material is shown in figure \ref{fig:itk-material-location}. 
@@ -156,9 +169,15 @@ The materials are defined in \GEANT in terms of their chemical composition and d
 
 \subsection{Simulation of the Pixel Detector }
 
-The Pixel Detector is divided into a barrel region and two identical endcaps. The outer barrel support structure is modelled using the longeron support structure, shown in figure \ref{fig:itk-longeron}. The longeron truss structures are approximated as thin sheets of carbon fiber, and the main rails supporting the truss, accounting for 80\% of the mass, are modelled by denser materials. 
+The Pixel Detector is divided into a barrel and two identical endcaps. 
+The outer barrel support structure is modelled using the longeron support structure, shown in figure \ref{fig:itk-longeron}. 
+The longeron truss structures are approximated as thin sheets of carbon fiber, and the main rails supporting the truss, 
+accounting for 80\% of the mass, are modelled by denser materials. 
 
-The inner barrel support structure is modelled as truss double shells, with one shell per layer. The shells are modelled as a sheet of carbon fiber behind each row of modules. The total mass of each shell in the support structure is adjusted to match the corresponding engineering estimate. The outer pixel endcaps are modelled as rings. Each layer of rings is also supported by a cylindrical carbon-fiber shell.
+The inner barrel support structure is modelled as truss double shells, with one shell per layer. 
+The shells are modelled as a sheet of carbon fiber behind each row of modules. 
+The total mass of each shell in the support structure is adjusted to match the corresponding engineering estimate. 
+The outer pixel endcaps are modelled as rings. Each layer of rings is also supported by a cylindrical carbon-fiber shell.
 
 \begin{figure}[h!]
     \centering
@@ -167,13 +186,22 @@ The inner barrel support structure is modelled as truss double shells, with one 
     \label{fig:itk-longeron}
 \end{figure}
 
-Pixel modules are modelled as an active sensor volume and a front-end (FE) chip. Layer 0 of both the barrel in the endcaps features 3D pixel sensors. The active part of the sensor is implemented as a 150-$\mu m$ thick layer of silicon and the support wafer as a 100-$\mu m$ thick layer of inactive silicon. Other layers feature planar pixel sensors, modelled as 100-$\mu m$ and 150-$\mu m$ thick active silicon respectively in layer 1 and layers 2-4. 
+Pixel modules are modelled as an active sensor volume and a front-end (FE) chip. 
+Layer 0 of both the barrel and the endcaps features 3D pixel sensors. 
+The active part of the sensor is implemented as a 150-$\mu m$ thick layer of silicon and the support wafer as 
+a 100-$\mu m$ thick layer of inactive silicon. 
+Other layers feature planar pixel sensors, modelled as 100-$\mu m$ and 150-$\mu m$ thick active silicon respectively in layer 1 and layers 2-4. 
 
-Front-end chips are modelled as a 150-$\mu m$ thick silicon wafer, with a 1-$\mu$m thick copper layer to model its circuitry, and a Sn-Ag bump bond of 20-$\mu$m in diameter per pixel channel. The material of each component in the FE chips is homogeneously distributed throughout its corresponding volume.
+Front-end chips are modelled as a 150-$\mu m$ thick silicon wafer, with a 1-$\mu$m thick copper layer to model its circuitry, 
+and a Sn-Ag bump bond of 20-$\mu$m in diameter per pixel channel. 
+The material of each component in the FE chips is homogeneously distributed throughout its corresponding volume.
 
 \subsection{Simulation of the Strip Detector}
 
-In the strip barrel detector, each individual part is modelled separately, with masses and material compositions reflecting the mechanical designs. In the strip endcaps, materials and objects in close proximity with each other are not individually modelled, but instead as one homogeneous block of material adjusted to have the same radiation length as calculated based on engineering designs. Figure \ref{fig:itk-strip} displays the \GEANT  geometry model of barrel staves and endcap petals in the Strip detector. 
+In the strip barrel detector, each individual part is modelled separately, with masses and material compositions reflecting the mechanical designs. 
+In the strip endcaps, materials and objects in close proximity with each other are not individually modelled, 
+but instead as one homogeneous block of material adjusted to have the same radiation length as calculated based on engineering designs. 
+Figure \ref{fig:itk-strip} displays the \GEANT  geometry model of barrel staves and endcap petals in the Strip detector. 
 
 \begin{figure}[h!]
     \begin{subfigure}[b]{0.49\textwidth}
@@ -192,7 +220,11 @@ In the strip barrel detector, each individual part is modelled separately, with 
     \label{fig:itk-strip}
 \end{figure}
 
-The global support of the detector in both the barrel and the endcaps is modelled in detail. Components include stave cooling pipes, carbon-foam, facesheets, cable bus, hybrids, and FE ASICs. Endcap sensors are individually modelled, while other components are modelled as a single edge-shaped object sandwiched between two silicon layers and uniformly filled with a generic material. The density of the material is adjusted to provide a radiation length of 0.02 $X_0$ per substructure. 
+The global support of the detector in both the barrel and the endcaps is modelled in detail. 
+Components include stave cooling pipes, carbon-foam, facesheets, cable bus, hybrids, and FE ASICs. 
+Endcap sensors are individually modelled, while other components are modelled as a single edge-shaped object sandwiched between 
+two silicon layers and uniformly filled with a generic material. 
+The density of the material is adjusted to provide a radiation length of 0.02 $X_0$ per substructure. 
 
 \section{Particle interaction with detector material}
 \label{sect:material-effects}
@@ -215,26 +247,23 @@ The stopping power of a material on an incident particle in the momentum range r
     -\frac{dE}{dx} = 2\pi N_a r_e^2 m_e c^2 \frac{Z}{A} \left( \frac{z^2}{\beta^2}\right) \left[ \log \left( \frac{2m_e \gamma^2 v^2 W_{max}}{I^2}\right) - 2\beta^2 -\delta   \right],
 \end{equation}
 in which $r_e = 2.817\times 10^{-13}$ cm is the classical electron radius, $m_e$ the electron mass, $N_a$ the Avogadro's number, $I$ the mean excitation potential, $Z$ and $A$ the atomic number and atomic weight of the absorbing material, $z$ the charge of the incident particle in units of $e$, $\beta $ the $\frac{v}{c}$ ratio, $\gamma = (1-\beta^2)^{-1/2}$ the relativistic $\gamma$ factor, $\delta$ the density correction, and $W_{max}$ the maximum energy transfer in a single collision.
-% \begin{itemize}
-%     \item $r_e = 2.817\times 10^{-13}$ cm: classical electron radius, 
-%     \item $m_e$: electron mass
-%     \item $N_a$: Avogadro's number
-%     \item $I$: mean excitation potential
-%     \item $Z$: atomic number of absorbing material
-%     \item $A$: atomic weight of absorbing material 
-%     % \item $\rho$: density of absorbing material 
-%     \item $z$: charge of the incident particle in $e$
-%     \item $\beta $ : $\frac{v}{c}$ ratio of the particle 
-%     \item $\gamma = (1-\beta^2)^{-1/2}$
-%     \item $\delta$: density correction 
-%     \item $W_{max}$: maximum energy transfer in a single collision.
-% \end{itemize}
+
 The maximum energy transfer depends on the ratio of the electron mass and the particle mass
 \begin{equation}
     \label{eq:6.2}
     W_{max} = \frac{2m_ec^2\beta^2\gamma^2}{1+2\gamma (m_e/M) + (m_e/M)^2}.
 \end{equation}
-The left hand size of equation \eqref{eq:6.1} is called the mass stopping power, which varies slowly with different materials. The average energy loss per unit length is simply given by $\rho \left(  \frac{dE}{dx}\right)$. Shown in figure \ref{fig:bethe-bloch} is the mass stopping power computed for a positive muon in copper over 12 order of magnitude in muon momentum. The region corresponding to $10$ MeV $<p_{\mu ^+}< $ 100 GeV, most relevant in high-energy physics, is called the Bethe region where the stopping power is a function of $\beta$ alone. At non-relativistic energies, $\frac{dE}{dx}$ is dominated by the overall $1/\beta^2$ factor (note the logarithmic scale in the vertical axis of \ref{fig:bethe-bloch}). The stopping power reaches a minimum at $\beta\gamma\approx 3$, and slowly rises thanks to the logarithmic dependence up to $\beta\gamma = 1000$, a range equivalent to a muon momentum of $1-100$ GeV. This minimum is broad and almost the same for all particles of the same charge. For this reason, particles at this point are called ``minimum-ionizing".  
+The left hand size of equation \eqref{eq:6.1} is called the mass stopping power, which varies slowly with different materials. 
+The average energy loss per unit length is simply given by $\rho \left(  \frac{dE}{dx}\right)$. 
+Shown in figure \ref{fig:bethe-bloch} is the mass stopping power computed for a positive muon in copper over 12 order of magnitude in muon momentum. 
+The region corresponding to $10$ MeV $<p_{\mu ^+}< $ 100 GeV, most relevant in high-energy physics, 
+is called the Bethe region where the stopping power is a function of $\beta$ alone. 
+At non-relativistic energies, $\frac{dE}{dx}$ is dominated by the overall $1/\beta^2$ factor 
+(note the logarithmic scale in the vertical axis of \ref{fig:bethe-bloch}). 
+The stopping power reaches a minimum at $\beta\gamma\approx 3$, and slowly rises thanks to the logarithmic dependence up to $\beta\gamma = 1000$, 
+a range equivalent to a muon momentum of $1-100$ GeV. 
+This minimum is broad and almost the same for all particles of the same charge. 
+For this reason, particles at this point are called ``minimum-ionizing".  
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\linewidth]{figures/bethe-bloch.png}
@@ -242,7 +271,11 @@ The left hand size of equation \eqref{eq:6.1} is called the mass stopping power,
     \label{fig:bethe-bloch}
 \end{figure}
 
-The stopping power in equation \eqref{eq:6.1} is computed for pure elements. A non-elemental material can be considered as a mixture of elements, whose stopping power is approximated by a weighted mean of $\frac{dE}{dx}$ over the elements in the compound. The weight is given by the fraction of electrons contributed by each element. In particular, the average mass stopping power is
+The stopping power in equation \eqref{eq:6.1} is computed for pure elements. 
+A non-elemental material can be considered as a mixture of elements, 
+whose stopping power is approximated by a weighted mean of $\frac{dE}{dx}$ over the elements in the compound. 
+The weight is given by the fraction of electrons contributed by each element. 
+In particular, the average mass stopping power is
 \begin{equation}
     \label{eq:6.3}
     \frac{dE}{dx} = \sum_i w_i\left( \frac{dE}{dx} \right)_i, \quad \quad w_i = \frac{a_i A_i}{\sum_j a_j A_j}
@@ -250,7 +283,8 @@ The stopping power in equation \eqref{eq:6.1} is computed for pure elements. A n
 where $a_i$ is the number of atoms in the $i$-th element, and $A_i$ the atomic weight. Knowing the stopping power of each element in a material and the molecular composition, one can easily compute the mean energy loss of an incident particle given its momentum. 
 
 Because of the statistical nature of inelastic collisions, the amount of energy deposited by a particle fluctuates around the mean calculated in equation \eqref{eq:6.1}. 
-In a relatively thick absorber, the number of collisions is large, and, assuming each collision results in a small energy loss $\delta E$, such that the particle velocity stays constant, the stopping power $\frac{dE}{dx}$ negligibly varies throughout the particle's path.
+In a relatively thick absorber, the number of collisions is large, and, assuming each collision results in a small energy loss $\delta E$, 
+such that the particle velocity stays constant, the stopping power $\frac{dE}{dx}$ negligibly varies throughout the particle's path.
 The total energy loss is thus the sum of a large number of independent identically distributed random energy losses, which approaches a Gaussian as $N\rightarrow \infty$
 \begin{equation}
     \label{eq:6.4}
@@ -409,9 +443,12 @@ Figure \ref{fig:multi-scat} illustrates the quantities used to describe the effe
     \label{fig:multi-scat}
 \end{figure}
 
-The material effects described in this section, sections \ref{subsect:e-loss-heavy} and \ref{subsect:e-loss-electron}, are sufficient for Monte-Carlo simulations of the particle passage through material in the ITk. 
+The material effects described in this section, sections \ref{subsect:e-loss-heavy} and \ref{subsect:e-loss-electron}, 
+are sufficient for Monte-Carlo simulations of the particle passage through material in the ITk. 
 The overall trajectory can be discretized into small segments. 
-The mean energy loss and Coulomb scattering angle over each segment can be estimated using equations \eqref{eq:6.1}, \eqref{eq:6.12}, \eqref{eq:6.15} and \eqref{eq:6.17}, along with the material distribution as shown in figure \ref{subfig:itk-rad-len}. The actual energy loss and scattering angle are then sampled from the corresponding distribution. 
+The mean energy loss and Coulomb scattering angle over each segment can be estimated using equations \eqref{eq:6.1}, 
+\eqref{eq:6.12}, \eqref{eq:6.15} and \eqref{eq:6.17}, along with the material distribution as shown in figure \ref{subfig:itk-rad-len}. 
+The actual energy loss and scattering angle are then sampled from the corresponding distribution. 
 
 \section{Simulated samples}
 \label{sect:simulated-samples}

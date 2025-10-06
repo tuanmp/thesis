@@ -428,6 +428,6 @@ The metric learning model learns to minimize the distance between space points b
 \end{equation}
 where $E[X]$ and $P[A]$ denote unconditional expectation value and probability, and $E[X|A]$ and $P[X|A]$ the conditional counterpart. 
 The first term on the right-hand size, representing the attractive loss, is a sum over the $\pT$-dependant mean distance between nodes connected by a target edge, weighted by $P[\pT|\mathrm{target}]$, the probability that the edge comes from a particle having transverse momentum $\pT$.
-As seen on figure \ref{subfig:pt-spectrum}, $P[\pT|\mathrm{target}]$ decreases monotonically with $\pT$, down-weighing the loss contribution, and thus directing the attention away from high-momentum particles.
+As seen on figure \ref{subfig:pt-spectrum}, $P[\pT|\mathrm{target}]$ decreases monotonically with $\pT$, limiting the contribution from high-$\pT$ particles to the loss function, and thus directing the attention away.
 As the curvature, which highly depends on $\pT$, is an important track pattern, the lack of high-$\pT$ examples impacts the performance of not only the metric learning, but also throughout the GNN4ITk algorithm.
 

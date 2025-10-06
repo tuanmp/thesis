@@ -5,7 +5,7 @@ Given a set of scored edges, the last stage of the pipeline segments them into i
 There are several methods to carry out this task. 
 The simplest case applies a score threshold to eliminate edges believed to be faked, and treats the remaining connected subgraphs as track candidates. 
 This approach, called \textbf{Connected Component}, ignores the directionality of graph edges.
-At the other edge of complexity, the edge direction is retained and exploited to make heuristic segmentation decisions. 
+At the other end of complexity, the edge direction is retained and exploited to make heuristic segmentation decisions. 
 A subgraph is traversed outward from a source node--one with no incoming edges, selecting the longest path to form a track candidate.
 This method is called \textbf{Walkthrough}. 
 Both approaches are detailed in this chapter, starting with the simple Connected Component.
@@ -38,7 +38,8 @@ A score cut of $s_{cut}=0.01$ is chosen to label the graph edges.
     \label{fig:gnn-edge-score}
 \end{figure}
 
-Illustrated in figure \ref{fig:connected-component}, the elimination of fake edges results in the segmentation of the input graph into subgraphs which are not connected to the rest of the graph. Mathematically, the segmented graph can be written as
+Illustrated in figure \ref{fig:connected-component}, the elimination of fake edges results in the segmentation of the input graph into subgraphs which are disconnected from the rest of the graph. 
+Mathematically, the segmented graph can be written as
 \beq
 \label{eq:11.2}
 G(V,E)=\bigcup_{i=1}^{M} G(V_i, E_i)
@@ -48,7 +49,10 @@ where for any pair $i\neq j,\,i\in [M], \, j\in[M]$,
 \label{eq:11.3}
 V_i \cap V_j = \varnothing, \quad E_i \cap E_j = \varnothing 
 \eeq
-figure \ref{subfig:gnn-input-graph}, shows a simplified input graph to the GNN, which contains two color-coded tracks: a \textbf{\textcolor{SeaGreen}{green}} track with 4 hits labelled $\{1,2,3,4\}$, a \textbf{\textcolor{RoyalBlue}{blue}} track with 3 hits labelled $\{5,6,7\}$; and a single \textbf{\textcolor{Plum}{violet}} hit labelled $\{8\}$. 
+figure \ref{subfig:gnn-input-graph}, shows a simplified input graph to the GNN, which contains two color-coded tracks: 
+a \textbf{\textcolor{SeaGreen}{green}} track with 4 hits labelled $\{1,2,3,4\}$, 
+a \textbf{\textcolor{RoyalBlue}{blue}} track with 3 hits labelled $\{5,6,7\}$, 
+and a single \textbf{\textcolor{Plum}{violet}} hit labelled $\{8\}$. 
 Hits and true edges from a track share the same color. 
 Fake edges are shown in \textbf{\textcolor{BrickRed}{red}}. 
 Note that the colours represent truth information available only for evaluation. 
@@ -184,10 +188,11 @@ The latter allows the GNN-labelled graph which already resides on the GPU during
 \label{fig:connected-component}
 \end{figure}
 
-It is perhaps not surprising that connected component alone is not sufficient to build track candidates with sufficient reconstruction efficiency, which is why its description emphasizes on an ideal GNN labelling.
+It is perhaps not surprising that connected component alone is not sufficient to build track candidates with sufficient reconstruction efficiency, 
+which is why its description emphasizes on an ideal GNN labelling.
 We already see from figure \ref{fig:gnn-edge-score} that this is not the case. 
 Aside from the inefficiency associated with the rejection of true edges with $\hat{y}<0.01$, $0.42\%$ of the fake edges still remain after the edge cut. 
-Despite their small population, residual fake edges create a non-negligible number of non-simple subgraphs, with whom the method is not equipped to deal.
+Despite their small population, residual fake edges create a non-negligible number of non-simple subgraphs, with which the method is not equipped to deal.
 These non-simple subgraphs occur then true tracks are merged by a misclassified fake edge, creating an object that fails to represent any of the underlying particle.
 We will examine this problem in greater details and its treatment in the next section.
 
@@ -196,7 +201,7 @@ We will examine this problem in greater details and its treatment in the next se
 
 Non-simple subgraphs are a big drawback of the Connected Component approach. 
 Their topology can range from a random hit being wrongly connected to an otherwise good track, to several tracks being merged together. 
-With the only tuneable parameter being the GNN edge score cut, it undergoes a trade-off between the edge efficiency and the fake edge rate. 
+With the only tuneable parameter being the GNN edge score cut, the method undergoes a trade-off between the edge efficiency and the fake edge rate. 
 A high score cut decreases the efficiency but also the number of fake edges, thus reducing the occurrence of non-simple subgraphs. 
 This edge efficiency reduction, however, often results in strong impact on the tracking efficiency of high-$\pT$ particles due to their small proportion. 
 To avoid compromising high-$\pT$ tracks, we must contend with a loose score cut and resolve the ensuing merged tracks.

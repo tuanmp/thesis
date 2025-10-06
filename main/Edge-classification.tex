@@ -2,7 +2,7 @@
 \label{chap:gnn}
 
 Graphs constructed by both methods introduced in the last chapter contain many fake edges.
-The second stage of the GNN4ITk chain labels the graph connections, so that fake ones are removed and track candidates are built from exclusively true connections. 
+The second stage of the GNN4ITk chain labels the graph connections, so that fake edges are removed and track candidates are built from exclusively true connections. 
 We carry out this task using a Graph Neural Network (GNN), which leverages the graph connectivity to compute a score for each edge that represents the probability of being a true edge.
 This chapter describes the edge classification stage, starting with a general introduction to GNNs.
 Sections \ref{sect:chap-gnn-filter-network} and \ref{sect:ignn} respectively detail the filter network and the interaction network, two edge-classifying GNN architectures investigated in this thesis, and their results. 
@@ -24,12 +24,15 @@ The general formulation of the $k$-th iteration at can be written as
 \mathbf{h}_i^k = \mathrm{UPDATE}_k \left( \mathbf{h}_i^{k-1}, \mathrm{AGGREGATE}_k\left( \{\mathbf{h}_j ^{k-1} : j\in \mathcal{N} (v_i) \} \right) \right)
 \eeq
 where $\mathbf{h}_i^k$ denotes the embedding of node $v_i$ after the $k$-th iteration, and $\mathcal{N} (v_i)$ the set of neighbouring nodes of $v_i$. 
-Numerous GNN architectures have been proposed, from the simple Graph Convolutional Networks (GCNs) \cite{gcn}, which leverage spectral graph theory to define convolution-like operations on graphs, Graph Attention Networks (GATs) \cite{gat}, which introduce attention mechanisms for adaptive neighbourhood weighting, to GraphSAGE \cite{graphsage}, and Graph Isomorphism Networks (GINs) \cite{gin}, which improved expressiveness in distinguishing graph structures.
+Numerous GNN architectures have been proposed, from the simple Graph Convolutional Networks (GCNs) \cite{gcn}, 
+which leverage spectral graph theory to define convolution-like operations on graphs, 
+Graph Attention Networks (GATs) \cite{gat}, which introduce attention mechanisms for adaptive neighbourhood weighting, 
+to GraphSAGE \cite{graphsage}, and Graph Isomorphism Networks (GINs) \cite{gin}, which improved expressiveness in distinguishing graph structures.
 
 \section{The filter network}
 \label{sect:chap-gnn-filter-network}
 
-In the previous section, we have motivated and introduced graph neural networks as the deep learning method for non-Euclidean data represented as graphs. 
+In the previous section, we have motivated and introduced GNNs as the deep learning method for non-Euclidean data represented as graphs. 
 The GNN4ITk algorithm uses graph networks to identify fake edges in the graphs built from the methods described in chapter \ref{chap:graph-construction}. 
 
 \subsection{Method}
@@ -101,11 +104,11 @@ However, for simplicity the \textbf{Filter} uses the mean aggregator, i.e.
 The neighbourhood function $\mathcal{N}(v)$ uniformly draws a fixed number of edges from the set $\{(u,v)\in \mathcal{V} \}$, instead of using the entire $1$-hop neighbourhood.
 Sampling limits the memory footprint of a \graphsage~operation on large graphs. 
 Without it, the consumption becomes unpredictable and grows with $\abs{\mathcal{V}}$.
-It is found in reference \cite{graphsage} that $K=2$ and sample sizes $S_1=25$, $S_2=10$ produce a good balance between memory and performance, which are used in the \textbf{Filter}.
+It is found in reference \cite{graphsage} that $K=2$ and sample sizes $S_1=25$, $S_2=10$ strike a good balance between memory and performance, which are used in the \textbf{Filter}.
 
 With the \graphsage~mechanism defined, we can now describe the network architecture. 
 First, the node embedding is evolved over $L$ iterations of \graphsage~to encode local context from a search depth at most $K\times L$. 
-The embedding of two nodes $(v_i, v_j)$ connected by an edge $e_{ij} \in {E}$ are concatenated and fed to a decoder $\phi: \mathbb{R}^n\times \mathbb{R}^n\rightarrow (0,1)$ to obtain a score representing the probability of being a true edge.
+The embeddings of two nodes $(v_i, v_j)$ connected by an edge $e_{ij} \in {E}$ are concatenated and fed to a decoder $\phi: \mathbb{R}^n\times \mathbb{R}^n\rightarrow (0,1)$ to obtain a score representing the probability of being a true edge.
 The corresponding pseudo-code is shown in algorithm \ref{alg:filter}.
 
 \begin{algorithm}
@@ -388,7 +391,7 @@ Equations \eqref{eq:10.7}-\eqref{eq:10.11} describe the message passing mechanis
 \end{algorithm}
 
 However, different from \graphsage, the message passing mechanism of the \ignn~tracks the edge vector and treats it as the message between nodes.
-Indeed, very few other GNN architectures maintain edge-level intermediate vectors, since information exchange between nodes can be effectuated without and explicit edge state. 
+Indeed, very few other GNN architectures maintain edge-level intermediate vectors, since information exchange between nodes can be effectuated without an explicit edge state. 
 Because the number of edges in a graph is generally much larger than the number of nodes, tracking the gradient of an edge-level network, such as the edge updater $\varphi_v^j$, consumes more memory than that of node-level networks.
 However, the increased computational cost is justified by better expressivity. 
 Reference \cite{interaction-gnn} proposed the \ignn~to model a multi-body physical system, in which each node represents an object and each edge the interaction between these objects. 
@@ -469,8 +472,8 @@ The model weights are optimized on the edge classification objective, using the 
 % \end{figure}
 
 Being both edge-classifying graph neural networks, the Filter and the Interaction network are evaluated using the same metrics. 
-Figure \ref{fig:gnn-eff-eta-pt-meanrms-ml}shows the edge efficiency of the \ignn~ as a functions of the particle's pseudorapidity (left) and transverse momentum (right). 
-Figures \ref{subfig:gnn-eff-eta-meanrms} and \ref{subfig:gnn-eff-pt-meanrms} describes the performance on graphs from the Module Map MeanRMS variant, whereas figures \ref{subfig:gnn-eff-eta-ml} and \ref{subfig:gnn-eff-pt-ml} those from the Metric Learning variant.
+Figure \ref{fig:gnn-eff-eta-pt-meanrms-ml} shows the edge efficiency of the \ignn~ as a functions of the particle's pseudorapidity (left) and transverse momentum (right). 
+Figures \ref{subfig:gnn-eff-eta-meanrms} and \ref{subfig:gnn-eff-pt-meanrms} describe the performance on graphs from the Module Map MeanRMS variant, whereas figures \ref{subfig:gnn-eff-eta-ml} and \ref{subfig:gnn-eff-pt-ml} those from the Metric Learning variant.
 The Module Map MinMax and MeanRMS variants have similar performance, so the former is omitted from all following figures in this chapter for brevity.
 The standard edge score cut $0.5$ is applied to make the binary prediction.
 Note, however, that this simple score cut will not be used to construct the final track candidate, as described in chapter \ref{chap:track-building}.
@@ -514,7 +517,7 @@ As we have seen from the discussion on the Filter network, the combination of lo
 As a result, the model favours the more abundant low-$p_T$ track edges and more often misidentifies high-$p_T$ ones.
 Since high-$p_T$ tracks are more concentrated in the barrel region, a slight decrease in efficiency is observed in $\abs{\eta}<1.5$.
 
-It is worth noting that the GNN4ITk pipeline has been developed over several iterations of MC data, the most recent of which is described in reference \cite{ctd23-gnn4itk}, on a dataset of 1780 $t\bar{t}$-events.
+It is worth noting that the GNN4ITk pipeline has been developed over several iterations of simulation data, the most recent of which is described in reference \cite{ctd23-gnn4itk}, on a dataset of 1780 $t\bar{t}$-events.
 The cumulative edge efficiency achieved in this thesis is 99.04\% for the \textbf{MeanRMS} variant, higher than the previous result of 98.2\%.
 The enhanced performance can be attributed to an optimized model architecture, and a larger training dataset, in particular 7800 event versus 1600 in reference \cite{ctd23-gnn4itk}. 
 
@@ -579,7 +582,7 @@ input graphs.
 The edge-based metrics are useful in evaluating machine learning models, and a simple score cut is typically sufficient in many applications. 
 However, in order to build track candidates, the scored graphs are subjected to a segmentation stage, which 
 treats the edge score in a procedure more sophisticated than a simple cut.
-In addition, the resulting track candidiates must fed into Athena \cite{atlas_collaboration_2021_4772550}, the main software analysis framework of ATLAS, 
+In addition, the resulting track candidiates must be fed to Athena \cite{atlas_collaboration_2021_4772550}, the main software analysis framework of ATLAS, 
 so that they are properly processed and become input into subsequent steps of the event reconstruction chain.
 % However, these edge-based metrics are useful to evaluate and optimize model design, but to assess the algorithm in production settings, the tracking and computing performance are more relevant in the larger context of ATLAS event reconstruction.
 

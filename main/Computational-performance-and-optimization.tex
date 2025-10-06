@@ -5,11 +5,13 @@ In the previous chapter, we have shown that the GNN4ITk pipeline achieves tracki
 An equally important aspect of a track reconstruction algorithm, as previously stated, is speed and resource consumption.
 After all, the bottleneck caused by the current CPU-intensive track finder under HL-LHC conditions is the primary motivation to develop a GPU-based alternative.
 In this regard, this thesis documents the first attempt to evaluate and optimize the computing performance on full-simulation data with realistic ITk geometry. 
-In comparison, previous publications have either focused entirely on the physics performance \cite{Burleson:2882507, ctd23-gnn4itk}, or evaluated computing performance on an open dataset based on simplified geometry \cite{exatrkx}. 
+In comparison, previous publications have either focused entirely on the physics performance \cite{Burleson:2882507, ctd23-gnn4itk}, 
+or evaluated computing performance on an open dataset based on simplified geometry \cite{exatrkx}. 
 This chapter presents a number of techniques to accelerate the edge classification inference, the key part of the GNN4ITk algorithm. 
 The most recent results on the pipeline latency is summarized and discussed with respect to that of the CKF. 
 
-It should be noted, however, that the computational performance of this technique undergoes rapid developments, and thus this chapter aims to provide a snapshot of the progress at the time of writing, rather than the finished product.
+It should be noted, however, that the computational performance of this technique undergoes rapid developments, 
+and thus this chapter aims to provide a snapshot of the progress at the time of writing, rather than the finished product.
 A fully optimized algorithm will likely be different from its present status. 
 As such, we will identify several directions both currently undertaken and for future studies.
 
@@ -17,7 +19,6 @@ As such, we will identify several directions both currently undertaken and for f
 As shown in figure \ref{fig:gnn4itk} and explained in chapters \ref{chap:graph-construction}, \ref{chap:gnn}, and \ref{chap:track-building}, the GNN4ITk is a multi-stage algorithm, in which the output from one stage becomes the input to the next.
 It is natural that these stages are developed and optimized independently.
 In production, the data must flow seamlessly through all stages to avoid unnecessary overhead from intermediate I/O and data transfer between CPU and GPU memories. 
-[A figure here to illustrate this]
 The data containing space point input is prepared by reading and preprocessing an event already save on disk, then transferred to the GPU only once. 
 It stays on the GPU, gets treated in sequence by the models, yielding a collection of track candidates, each as an array of hit indices. 
 After the track building stage, the output transferred back to the CPU for track fit, and the GPU memory liberated to process the next event. 
@@ -28,11 +29,13 @@ An inference pipeline in \textsc{Python}, as a part of our \textsc{R\&D} softwar
 \label{sect:opt-techniques}
 Graph neural networks are the key engine for pattern recognition in the GNN4ITk pipeline. 
 They are also the easiest to accelerate, as many techniques are well established and integrated into standard \textsc{Python} libraries. 
-We detail in this section two optimizations which in combination significantly enhance the inference speed of the \ignn, starting with Automated Mixed Precision, followed by Just-In-Time compilation.
+We detail in this section two optimizations which in combination significantly enhance the inference speed of the \ignn, 
+starting with Automated Mixed Precision, followed by Just-In-Time compilation.
 
 \subsection{Automatic mixed precision (AMP)}
 Reduced precision is a common technique in machine learning to enhance latency and reduce memory footprint.
-A number represented by binary form is characterized by three components, namely the sign, the exponent, and the mantissa, each of which is quantified by a number of bits, depending on the data format. 
+A number represented by binary form is characterized by three components, namely the sign, the exponent, and the mantissa, 
+each of which is quantified by a number of bits, depending on the data format. 
 The sign, represented by a single bit, is self-explanatory. 
 The exponent determines the range of the number that a particular format can represent, and the mantissa the precision with which a number is characterized. 
 The more bits are dedicated to the exponent, the wider is the range.
@@ -43,8 +46,10 @@ The first bit is dedicated for the sign, the next 8 bits for the exponent, and t
 The 8 exponential bits can represent numbers from 0 to 256, thus enabling a logarithmic\footnote{base 2} range of $[-126, 127]$, with some values reserved for special numbers such as infinities, NaNs, etc.
 Roughly speaking, the 23 mantissa bits allow to express numbers with lower threshold of $2^{-23}$ in precision.
 
-However, during inference, such a wide range and high precision may not be necessary to achieve good accuracy, since no gradient calculation, which is prone to numerical explosion and vanishing, takes place. 
-If the network output is stable under smaller bit widths, it is possible to decrease memory footprint, improve computational efficiency, and reduce power consumption by simply lowering the precision. 
+However, during inference, such a wide range and high precision may not be necessary to achieve good accuracy, 
+since no gradient calculation, which is prone to numerical explosion and vanishing, takes place. 
+If the network output is stable under smaller bit widths, it is possible to decrease memory footprint, 
+improve computational efficiency, and reduce power consumption by simply lowering the precision. 
 We examine the latency and accuracy of the \ignn under FP16, or half-precision, in comparison to the baseline single-precision.
 
 % \begin{figure}
@@ -58,7 +63,7 @@ Compilation is a mechanism to optimize the performance and deployability of deep
 \textsc{PyTorch} \cite{pytorch}'s eager execution model is highly expressive and user-friendly but also incurs significant overhead due to the dynamic nature of \textsc{Python} and the interpreter. 
 Just-In-time compilation address this limitation by capturing, transforming, and optimizing the execution of \textsc{PyTorch} models at runtime, thereby delivering substantial speedups while maintaining full compatibility with native \textsc{Python} constructs.
 
-Under the hood, \textsc{PyTorch} performs a series of sophisticated transformations to analyze the computational graph\footnote{A model is essentially a computational graph, to be distinguished from the graph data on which it operates.} for efficient execution on both CPUs and GPUs. 
+Under the hood, \textsc{PyTorch} performs a series of complex transformations to analyze the computational graph\footnote{A model is essentially a computational graph, to be distinguished from the graph data on which it operates.} for efficient execution on both CPUs and GPUs. 
 The first step translates the model into a graph of symbolic functional transformations (FX), in which each node represents the sequence of computations.
 The FX nodes are then converted into a lower-level representation that reflects the underlying tensor operations, followed by partitioning the FX graph into subgraphs suitable for kernel fusion.
 A large contribution to the overall acceleration comes from merging multiple pointwise and elementwise operations in each FX subgraph into a single kernel, reducing memory reads/writes and kernel launch overhead.
@@ -181,7 +186,7 @@ The execution time of the optimized code is thus not only small but also stays s
 The latency reduction from these computational optimizations is also evident from both the mean and spread of the GPU time distribution observed in each scenario, demonstrated in figure \ref{subfig:gnn-time-hist}.
 In the combined optimization, the distribution averages to $42\pm 9$ ms, with a range of 103 ms, while in the eager baseline, the distribution centers at $443\pm117$ ms, with a range of 1231 ms. 
 The former only only peaks at a lower latency, it is also much narrower than the latter.
-This weak scaling makes the computation less susceptible to large events outside the core distribution, as shown in figure \ref{subfig:gnn-time-node} above $\abs{V}=4.5\times 10^5$.
+This weak scaling makes the computation less susceptible to unusually large events, as shown in figure \ref{subfig:gnn-time-node} above $\abs{V}=4.5\times 10^5$.
 
 % The rise in inference times as the event gets larger is also driven by the quadratic term
 

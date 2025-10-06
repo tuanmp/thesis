@@ -51,8 +51,10 @@ A cluster can be regarded as a measurement made in the local coordinate of the m
 From a cluster, the location of the hit in global coordinate, called the space point, can be derived.
 Figure \ref{fig:sp-calcul} illustrates three particle tracks traversing a pixel sensor and inducing separate clusters. 
 The true intersections are shown as red dots. 
-An estimate of each of the true intersections between the trajectory and the sensor plane shown as red dots, is made in the clusterization step, and combined with the location and rotation of the sensor surface to obtain the space points.
-In this sense, pixel space point formation is obtained from a change in reference frame of the cluster coordinates via a series of translational and rotational transformations. 
+An estimate of each of the true intersections between the trajectory and the sensor plane shown as red dots, 
+is made in the clusterization step, and combined with the location and rotation of the sensor surface to obtain the space points.
+In this sense, pixel space point formation is obtained from a change in reference frame of the cluster coordinates 
+via a series of translational and rotational transformations. 
 
 \begin{figure}[htb]
     \centering
@@ -113,15 +115,17 @@ Let $\bfx\in \mathbb{R}^d$ represent the state of the particle and vary as a fun
 We will keep the discussion here general and note that any set of parameters from which the instantaneous position and momentum of the particle can be derived is usable. 
 The choice of parametrization in ATLAS is discussed in section \ref{sect:chi2-fit}.
 In general, track parameters can be regarded as the internal state of the particle, which is not directly measurable.
-Instead the measurements are made at discrete points on the trajectory where a sensitive module is present.
-Each measurement $\bfm_i$ can then be modelled as a deterministic function of the track state at that the measuring surface $\bfx_i$ superimposed by a random experimental noise $\epsilon_i$.
+Instead, the measurements are made at discrete points on the trajectory where a sensitive module is present.
+Each measurement $\bfm_i$ can then be modelled as a deterministic function of the track state at that the measuring surface $\bfx_i$ superimposed by a random noise $\epsilon_i$.
 \beq
 \label{eq:track-fit:2}
 \bfm_i = h_i(\bfx_i) + \epsilon_i.
 \eeq
-The function $h_i:\mathbb{R}^d \rightarrow \mathbb{R}^n$, called the \textit{measurement model}, projects the $d$-dimensional state vector $\bfx_i$ on the $i$-th surface to an $n$-dimensional measurement vector. 
+The function $h_i:\mathbb{R}^d \rightarrow \mathbb{R}^n$, called the \textit{measurement model}, 
+projects the $d$-dimensional state vector $\bfx_i$ on the $i$-th surface to an $n$-dimensional measurement vector. 
 Its functional form depends on the type of measuring surface, hence the subscript.
-For example, a measurement on a pixel module is intrinsically different from one on a strip module\footnote{A pixel cluster is a $2D$ measurement, while a strip cluster is $1D$.}, so their measurement models naturally differ. 
+For example, a measurement on a pixel module is intrinsically different from one on a strip module\footnote{A pixel cluster is a $2D$ measurement, 
+while a strip cluster is $1D$.}, so their measurement models naturally differ. 
 
 The experimental noise $\epsilon_i$ also depends on the type of measuring surface. 
 However, it is generally assumed to be unbiased with finite variance, namely
